@@ -1,0 +1,247 @@
+/*--------------------------------------------------------------
+>>> TABLE OF CONTENTS:
+----------------------------------------------------------------
+# Generic (CALLED IN ANOTHER FILE)
+	- Normalize
+	- Box sizing
+	- Media width
+# Base
+	- Typography
+	- Elements
+	- Links
+# Layouts
+# Components
+	- Header
+	- Main
+	- Footer
+--------------------------------------------------------------*/
+
+/*--------------------------------------------------------------
+# Base
+--------------------------------------------------------------*/
+
+/* Typography
+--------------------------------------------- */
+body {
+    font-family: Barlow, Arial, Helvetica, sans-serif;
+    line-height: 1.5;
+    font-size: 1.125rem;
+}
+
+h1,
+h2 {
+    margin-top: 0;
+}
+
+h2 {
+    font-size: 1.5rem;
+}
+
+
+/* Elements
+--------------------------------------------- */
+body {
+    margin: 1rem;
+    background-color: #1e212e;
+    color: #ffffff;
+}
+
+
+section {
+    padding: 1.5rem;
+}
+
+/*--------------------------------------------------------------
+# Layout
+--------------------------------------------------------------*/
+
+
+/*--------------------------------------------------------------
+# Components
+--------------------------------------------------------------*/
+
+/* Header 
+---------------------------------------------*/
+#game-header {
+    max-width: 30rem;
+    min-height: 10rem;
+    background-color: #7e5496;
+    padding: 1.5rem;
+    text-align: center;
+    border-radius: 2rem;
+    margin: 1rem auto;
+}
+
+
+/* Main 
+---------------------------------------------*/
+main {
+    position: relative;
+    max-width: 30rem;
+    margin: 1rem auto 4rem;
+    overflow: hidden;
+    border-radius: 2rem;
+    background-color: #7e5496;
+    filter: drop-shadow(0 2rem #59386d);
+}
+
+
+/* Game Area 
+---------------------------------------------*/
+#game-area {
+    position: relative;
+    padding: 0;
+    margin: 1rem;
+    background-color: #ccccee;
+    border-radius: 1.5rem;
+    /* border: 2px solid #59386d; */
+    overflow: hidden;
+    filter: drop-shadow(0 -4px #59386d);
+}
+
+/* Screens */
+.screen-container {
+    color: #1e212e;
+    /* padding: 1.5rem; */
+    min-height: 30rem;
+    display: block;
+}
+
+
+/* Splash Screen */
+
+/* Game Screen */
+#game-screen {
+    /* padding: 0; */
+    background-color: #3c653c;
+    background-image: url(../images/PLACEHOLDER_grass_80px.jpg);
+    background-attachment: fixed;
+    background-size: 160px;
+}
+.paused {
+    background-color: #646483;
+}
+
+.paused::after {
+    content: "Paused";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.hidden {
+    display: none;
+}
+
+/* Path Blocks */
+#path-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+}
+.path {
+    position: absolute;
+    display: inline-block;
+    /* width: 10px;
+    height: 10px; */
+    background-color: #5385ce;
+    background-image: url(../images/PLACEHOLDER_water.gif);
+    background-attachment: fixed;
+    background-size: 80px;
+    border-left: 4px solid #38a0ff;
+    border-right: 4px solid #38a0ff;
+    /* border-radius: 50%; */
+}
+
+/* Distance Tracker */
+
+.distance-tracker {
+    position: absolute;
+    top: 1rem;
+    left: 1rem;
+    color: #ffffff;
+}
+
+.distance-tracker .distance-value {
+    font-family: "Share Tech Mono", monospace;
+}
+
+/* Player */
+.player {
+    position: absolute;
+    /* width: 32px;
+    height: 32px;
+    background-color: #ad5215;
+    border-radius: 50%;
+    bottom: 50px;
+    left: 50%; */
+}
+
+/* Modals */
+.modal {
+    color: #1e212e;
+}
+
+
+/* Controls Area 
+---------------------------------------------*/
+#control-area {
+    /* min-height: 10rem; */
+    text-align: center;
+    /* padding-top: 1rem; */
+}
+
+.menu-btn {
+    display: block;
+    margin: 0 auto 2rem;
+}
+
+button.direction-btn {
+    border: none;
+    background: none;
+    /* background-color: #9393ac; */
+    border-radius: 50%;
+    /* padding: 1rem; */
+    margin: 0 1rem 2rem;
+}
+
+.direction-btn svg {
+    position: relative;
+    top: 0px;
+    height: 4rem;
+    filter: drop-shadow(0 5px #12131b);
+}
+
+.direction-btn .button-body {
+    fill: #1e212e;
+}
+
+.direction-btn .button-arrow-shadow {
+    fill:#12131b;
+}
+
+.direction-btn .button-arrow {
+    fill:#373f56;
+}
+
+
+button.direction-btn:hover .button-body {
+    fill: #272b3a;
+}
+
+/* Convert to .pressed later */
+button.direction-btn.pressed svg {
+    top: 3px;
+    filter: drop-shadow(0 2px #12131b);
+}
+button.direction-btn.pressed .button-body {
+    fill: #272b3a;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+}
