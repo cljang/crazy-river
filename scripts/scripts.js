@@ -30,8 +30,8 @@ const game = {
 
     // Game Elements
     $pathContainer: $("#path-container"),
-    $distanceValue: $(".distance-value"),
-    $bestDistanceValue: $(".best-distance-value"),
+    $distanceValue: $(".distance-tracker .distance-value"),
+    $bestDistanceValue: $(".best-distance-tracker .distance-value"),
     $finalScoreValue: $(".final-score-value"),
 
     // Modals
