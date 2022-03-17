@@ -13,9 +13,10 @@ const game = {
     $startBtn: $(".start-btn"),
     $pauseBtn: $(".pause-btn"),
     $endBtn: $(".end-btn"),
-    $quitBtn: $(".quit-btn"),
+    $homeBtn: $(".home-btn"),
     $playAgainBtn: $(".play-again-btn"),
     $helpBtn: $(".help-btn"),
+    $instructionsBtn: $(".instructions-btn"),
     $menuBtn: $(".menu-btn"),
     $closeModalBtn: $(".close-btn"),
     $modalInfoBtn: $(".info-btn"),
@@ -30,8 +31,8 @@ const game = {
 
     // Game Elements
     $pathContainer: $("#path-container"),
-    $distanceValue: $(".distance-tracker .distance-value"),
-    $bestDistanceValue: $(".best-distance-tracker .distance-value"),
+    $distanceValue: $(".distance .distance-value"),
+    $bestDistanceValue: $(".best-distance .distance-value"),
     $finalScoreValue: $(".final-score-value"),
 
     // Modals
@@ -47,7 +48,7 @@ const game = {
 
     // Screens
     screen: "splash-screen",
-    gameScreens: ["splash-screen", "game-screen", "game-over-screen"],
+    gameScreens: ["splash-screen", "instructions-screen", "game-screen", "game-over-screen"],
 
     // Game Update Loop
     updateInterval: 20,
@@ -374,13 +375,15 @@ const game = {
         // Move path to top of the screen - minus some offset for extra path elements
         path.addTop(-(game.$pathContainer.height() + (game.pathHeight * (game.extraPaths + 1))));
 
-        // // Reset any border coloring
-        // path.element.css("border","");
+        // Remove speed-up class if it exists
+        path.element.removeClass("speed-up");
 
-        // // Mark the first path block of the current path adjustment cycle
-        // if ( game.pathAdjustmentPathCounter === 0 ) {
-        //     path.element.css("border","1px solid yellow");
-        // }
+        // Indicate at what point a speed up will happen
+        // Height of paths in pixels since "0m" point = game.pathAdjustmentPathCounter*game.pathHeight 
+        // Pixels to speedAdjustmentPeriod from "0m" point = game.speedAdjustmentPeriod*game.pixelsPerMeter
+        if ( game.pathAdjustmentPathCounter*game.pathHeight === game.speedAdjustmentPeriod*game.pixelsPerMeter ) {
+            path.element.addClass("speed-up");
+        }
 
         // Update Width
         game.pathWidth += (game.pathWidthAdjustment * game.tileSize);
@@ -415,9 +418,8 @@ const game = {
 
         game.pathAdjustmentPathCounter++;
 
-        // Handle path adjustment cycle - after counter reaches the set period, reset the counter and get a new path adjustment direction
-        if (game.pathAdjustmentPathCounter >= game.pathAdjustmentPeriod ) {
-            game.pathAdjustmentPathCounter = 0;
+        // Handle path adjustment cycle - after counter passes the set period, get a new path adjustment direction
+        if (game.pathAdjustmentPathCounter % game.pathAdjustmentPeriod == 0) {
             game.changePathDirections();
         }
     },
@@ -574,6 +576,13 @@ const game = {
             game.switchScreen("game-screen");
         })
 
+        // Instructions Button
+        game.$instructionsBtn.click((e) => {
+            e.preventDefault();
+            
+            game.switchScreen("instructions-screen");
+        })
+
         // Pause Button
         game.$pauseBtn.click((e) => {
             e.preventDefault();
@@ -602,7 +611,7 @@ const game = {
         })
 
         // Quit Buttons 
-        game.$quitBtn.click((e) => {
+        game.$homeBtn.click((e) => {
             e.preventDefault();
 
             game.switchScreen("splash-screen");
