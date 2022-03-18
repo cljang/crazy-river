@@ -44,21 +44,20 @@
             </div>
             <div id="instructions-screen" class="screen-container" style="display: none;">
                 <h2>Instructions</h2>
-                <button class="btn home-btn">Back</button>
-                <!-- <button class="btn start-btn">Start</button> -->
+                <button class="btn back-btn">Back</button>
+            </div>
+            <div id="setup-screen" class="screen-container" style="display: none;">
+                <h2>Setup</h2>
+                <label for="name">Player Name:</label>
+                <input type="text" name="name" id="name">
+                <button class="btn green-btn play-btn">Play</button>
             </div>
             <div id="game-screen" class="screen-container" style="display: none;">
-                <!-- <h2>Game</h2> -->
-                <!-- <p>Here is some text</p> -->
-                <!-- <button class="btn btn-dark pause-btn">Pause</button> -->
-                <!-- Get rid of this eventually -->
-                <!-- <button class="btn btn-dark end-btn">End</button> -->
                 <div id="path-container">
                     <!-- Obstacles go here -->
                 </div>
                 <p class="score distance">Score: <span class="distance-value">0</span>m</p>
                 <p class="score best-distance">Best: <span class="distance-value">0</span>m</p>
-                <!-- <div id="player" class="player"></div> -->
             </div>
             <div id="game-over-screen" class="screen-container" style="display: none;">
                 <h2>Game Over</h2>
@@ -68,46 +67,54 @@
                 </div>
                 <!-- <p class="high-score">New High Score</p> -->
                 <button class="btn green-btn play-again-btn">Play Again</button>
-                <button class="btn high-score-btn">High Scores</button>
-                <button class="btn red-btn home-btn">Quit</button>
+                <button class="btn leaderboard-btn">Leaderboard</button>
+                <button class="btn red-btn quit-btn">Quit</button>
+            </div>
+            <div id="leaderboard-screen" class="screen-container" style="display: none;">
+                <h2>Leaderboard</h2>
+                <table class="leaderboard">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Player</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody class="leaderboard-list">
+                        <tr>
+                            <td>1.</td>
+                            <td>CJANG</td>
+                            <td>800m</td>
+                        </tr>
+                        <tr>
+                            <td>2.</td>
+                            <td>FAKER</td>
+                            <td>600m</td>
+                        </tr>
+                        <tr>
+                            <td>3.</td>
+                            <td>[___]</td>
+                            <td>400m</td>
+                        </tr>
+                        <tr>
+                            <td>4.</td>
+                            <td>SMILE</td>
+                            <td>200m</td>
+                        </tr>
+                        <tr>
+                            <td>5.</td>
+                            <td>STEVE</td>
+                            <td>100m</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button class="btn back-btn">Back</button>
+                <!-- <button class="btn start-btn">Start</button> -->
             </div>
 
-            <!-- Modals - Probably replace with my own screens-->
-            <!-- <div class="modal fade" id="setup-instructions" data-bs-backdrop="static">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Setup Instructions</h5>
-                        </div>
-                        <div class="modal-body">
-                            This is the Setup Instructions.
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-dark info-btn">More Info</button>
-                            <button type="button" class="btn btn-dark close-btn">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="modal fade" id="game-instructions" data-bs-backdrop="static">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="exampleModalLabel">Game Instructions</h5>
-                        </div>
-                        <div class="modal-body">
-                            This is the Game Instructions.
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-dark close-btn">Close</button>
-                        </div>
-                    </div>
-                </div>
-            </div> -->
         </section>
         <section id="control-area">
             <button class="btn btn-dark menu-btn">Menu</button>
-            <!-- <button class="direction-btn left-btn"><i class="fas fa-arrow-alt-circle-left"></i></button> -->
             <button class="direction-btn left-btn">
                 <svg id="left-button" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
                     <circle class="button-body" cx="256" cy="256" r="256"/>

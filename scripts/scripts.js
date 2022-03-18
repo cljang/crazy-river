@@ -11,15 +11,13 @@ const game = {
 
     // Buttons
     $startBtn: $(".start-btn"),
-    $pauseBtn: $(".pause-btn"),
-    $endBtn: $(".end-btn"),
-    $homeBtn: $(".home-btn"),
-    $playAgainBtn: $(".play-again-btn"),
-    $helpBtn: $(".help-btn"),
     $instructionsBtn: $(".instructions-btn"),
+    $backBtn: $(".back-btn"),
+    $playBtn: $(".play-btn"),
+    $playAgainBtn: $(".play-again-btn"),
+    $leaderboardBtn: $(".leaderboard-btn"),
+    $quitBtn: $(".quit-btn"),
     $menuBtn: $(".menu-btn"),
-    $closeModalBtn: $(".close-btn"),
-    $modalInfoBtn: $(".info-btn"),
     $leftBtn: $(".left-btn"),
     $rightBtn: $(".right-btn"),
 
@@ -35,6 +33,9 @@ const game = {
     $bestDistanceValue: $(".best-distance .distance-value"),
     $finalScoreValue: $(".final-score-value"),
 
+    // Leaderboard
+    $leaderboardList: $(".leaderboard-list"),
+
     // Modals
     $gameInstructions: $("#game-instructions"),
     $setupInstructions: $("#setup-instructions"),
@@ -48,7 +49,8 @@ const game = {
 
     // Screens
     screen: "splash-screen",
-    gameScreens: ["splash-screen", "instructions-screen", "game-screen", "game-over-screen"],
+    lastScreen: "splash-screen",
+    gameScreens: ["splash-screen", "instructions-screen", "setup-screen", "game-screen", "game-over-screen", "leaderboard-screen"],
 
     // Game Update Loop
     updateInterval: 20,
@@ -117,6 +119,29 @@ const game = {
     pixelsPerMeter: 20,         // Distance conversion factor
     bestDistance: 0,
 
+    // Leaderboard
+    leaderboard: [
+        {
+            name: "CJANG",
+            score: 800
+        }, 
+        {
+            name: "FAKER",
+            score: 600
+        }, 
+        {
+            name: "[___]",
+            score: 400
+        }, 
+        {
+            name: "SMILE",
+            score: 200
+        }, 
+        {
+            name: "STEVE",
+            score: 100
+        }, 
+    ],
 
     // ======================================================
     // Game Functions
@@ -125,14 +150,12 @@ const game = {
     setPaused: () => {
         game.isRunning = false;
         game.$gameScreen.addClass("paused")
-        game.$pauseBtn.text("Play")
         game.stopUpdate();
     },
 
     clearPaused: () => {
         game.isRunning = true;
         game.$gameScreen.removeClass("paused")
-        game.$pauseBtn.text("Pause")
         game.runUpdate();
     },
 
@@ -140,6 +163,7 @@ const game = {
         game.setPaused();
         game.switchScreen("game-over-screen");
         game.$finalScoreValue.text(game.distanceScrolledMeters);
+        game.updateLeaderboard();
     },
     
     reset: () => {
@@ -178,53 +202,18 @@ const game = {
         if (game.gameScreens.includes(screen)) {
             // Hide all screens
             game.$screens.hide();
+
+            // Record Original Screen
+            game.lastScreen = game.screen;
     
             // Change screen
             game.screen = screen;
             
             // Show new screen
             $(`#${screen}`).show();
-    
-            // Show the header quit button on the game screen, otherwise hide it
-            if (screen === "game-screen") {
-                $("#game-header .quit-btn").show();
-            } else {
-                $("#game-header .quit-btn").hide();
-            }
-
-            // Hide the header help button on the game over screen, otherwise show it
-            if (screen === "game-over-screen") {
-                $("#game-header .help-btn").hide();
-            } else {
-                $("#game-header .help-btn").show();
-            }
         } else {
             console.log(`${screen} is not a valid screen selection`);
         }
-    },
-    showHelpModal: () => {
-        // Record state before showing modal
-        game.wasRunning = game.isRunning; 
-
-        // Show desired modal
-        if (game.screen === "game-screen") {
-            game.setPaused();
-            game.$gameInstructions.modal('show');
-        } else {
-            game.$setupInstructions.modal('show');
-        }
-    }, 
-    hideHelpModal: () => {
-        // Return to state before showing modal
-        if (game.wasRunning) {
-            game.clearPaused();
-        } else {
-            game.setPaused();
-        }
-
-        // Hide all modals
-        game.$setupInstructions.modal('hide');
-        game.$gameInstructions.modal('hide');
     },
 
     
@@ -314,13 +303,15 @@ const game = {
 
     // Update each path object
     updatePaths: () => {
-        game.paths.forEach((path) => {
+        for (let i = 0; i < game.paths.length; i++) {
+            let path = game.paths[i];
             path.update();
 
             // Check if any part of the entire player overlaps with the current path, if so, check the individual hitboxes, if there is a hitbox collision, the game is over
             if(game.player.overlapsVertically(path)) {
                 if (game.player.checkHitboxCollisions(path) ) {
                     game.gameOver();
+                    break
                 };
             }
 
@@ -328,10 +319,7 @@ const game = {
                 game.generateDirectedPath(path);
                 // game.generateRandomPath(path);
             }
-        })
-
-        // Speed adjustment
-
+        }
     },
 
     // Randomly increase/decrease the path width and shift it side to side
@@ -430,12 +418,6 @@ const game = {
         let newWidthAdjustment = Math.floor(Math.random() * 3) - 1;
         // -1, 0, 1 => Move left, stay same, move right
         let newLeftAdjustment = Math.floor(Math.random() * 3) - 1;
-        
-        // // Set new adjustment factors for width and left position of paths
-        // // -1<=x<=1 => Shrink/grow by between -1/+1 tile
-        // game.pathWidthAdjustment = (Math.random() * 2) - 1;
-        // // -1<=x<=1 => Move left/right by between -1/+1 tile
-        // game.pathLeftAdjustment = (Math.random() * 2) - 1;
 
         // Don't allow consecutive straight path cycles
         if ( game.pathLeftAdjustment == 0 && newLeftAdjustment == 0 ) {
@@ -450,7 +432,7 @@ const game = {
             newWidthAdjustment *= -1;
         }
 
-
+        // Update adjustment factors
         game.pathWidthAdjustment = newWidthAdjustment;
         game.pathLeftAdjustment = newLeftAdjustment;
     },
@@ -545,6 +527,39 @@ const game = {
     },
 
     // ======================================================
+    // Leaderboard Functions
+    // ======================================================
+    updateLeaderboard: () => {
+        // Check if player's current score exceeds any of the existing leaderboard scores, if so, splice the player's score into the leaderboard and break out of the loop
+        for (let i = 0; i < game.leaderboard.length; i++) {
+            if (game.distanceScrolledMeters > game.leaderboard[i].score) {
+                game.leaderboard.splice(i,0,{
+                    name: game.player.getName(),
+                    score: game.distanceScrolledMeters
+                })
+                break;
+            }
+        }
+
+        // Limit leaderboard to top 5
+        game.leaderboard = game.leaderboard.slice(0,5);
+
+        // Empty DOM leaderboard
+        game.$leaderboardList.empty();
+
+        // Redraw DOM Leaderboard
+        game.leaderboard.forEach((player,index) => {
+            let $newRow = $(
+                `<tr>
+                    <td>${index+1}.</td>
+                    <td>${player.name}</td>
+                    <td>${player.score}m</td>
+                </tr>`);
+            game.$leaderboardList.append($newRow);
+        })
+    },
+
+    // ======================================================
     // Initialization Functions
     // ======================================================
     init: () => {
@@ -562,7 +577,7 @@ const game = {
         // Create Player
         // Center player horizontally
         game.initialPlayerLeft = game.screenWidth/2 - game.playerWidth/2;
-        game.player = new Player(game.initialPlayerLeft, game.initialPlayerTop)
+        game.player = new Player(game.initialPlayerLeft, game.initialPlayerTop, "NAME")
 
         // Update initial distance offset to player position (top)
         game.initialDistanceOffset = game.initialPlayerTop;
@@ -583,23 +598,11 @@ const game = {
             game.switchScreen("instructions-screen");
         })
 
-        // Pause Button
-        game.$pauseBtn.click((e) => {
+        // Instructions Button
+        game.$backBtn.click((e) => {
             e.preventDefault();
-
-            if (game.isRunning) {
-                game.setPaused();
-            } else {
-                game.clearPaused();
-            }
-        })
-
-        // End Buttons
-        game.$endBtn.click((e) => {
-            e.preventDefault();
-
-            game.clearPaused();
-            game.switchScreen("game-over-screen");
+            
+            game.switchScreen(game.lastScreen);
         })
 
         // Play Again Buttons 
@@ -610,18 +613,18 @@ const game = {
             game.switchScreen("game-screen");
         })
 
+        // Leaderboard Button
+        game.$leaderboardBtn.click((e) => {
+            e.preventDefault();
+            
+            game.switchScreen("leaderboard-screen");
+        })
+
         // Quit Buttons 
-        game.$homeBtn.click((e) => {
+        game.$quitBtn.click((e) => {
             e.preventDefault();
 
             game.switchScreen("splash-screen");
-        })
-
-        // Help Buttons
-        game.$helpBtn.click((e) => {
-            e.preventDefault();
-
-            game.showHelpModal()
         })
 
         // Menu Button
@@ -635,21 +638,6 @@ const game = {
                     game.clearPaused();
                 }
             }
-        })
-
-        // Modal Close Buttons
-        game.$closeModalBtn.click((e) => {
-            e.preventDefault();
-
-            game.hideHelpModal();
-        })
-
-        // Modal More Info Button
-        game.$modalInfoBtn.click((e) => {
-            e.preventDefault();
-
-            game.$setupInstructions.modal('hide');
-            game.$gameInstructions.modal('show');
         })
 
         // Left Button
@@ -678,7 +666,7 @@ const game = {
             game.rightPressed(false);
         })
 
-        // Player Controls
+        // Player Keyboard Controls
         $(window).keydown((e) => {
             let key = e.key;
             switch (key) {
@@ -692,6 +680,22 @@ const game = {
                 case "d":
                 case "ArrowRight":
                     game.rightPressed(true);
+                    break;
+                
+                // Open instructions screen on splash page 
+                case "I":
+                case "i":
+                    if (game.screen === "splash-screen") {
+                        game.switchScreen("instructions-screen")
+                    }
+                    break;
+
+                // Return to previous screen on screens where there is a back button 
+                case "Escape":
+                case "Backspace":
+                    if (game.screen === "instructions-screen" || game.screen === "leaderboard-screen") {
+                        game.switchScreen(game.lastScreen);
+                    }
                     break;
                         
                 default:
@@ -891,11 +895,12 @@ class Path extends Entity {
 }
 
 class Player extends Entity {
-    constructor(left=0,top=0) {
+    constructor(left=0,top=0, name="") {
         super(left,top,game.playerWidth,game.playerHeight);
         
-        // Player img
+        // Player identifiers
         this.img = "./images/donut-arrow.svg";
+        this.name = name;
 
         // Player motion variables
         this.speed = 0;
@@ -957,6 +962,15 @@ class Player extends Entity {
         
         // Overwrite player element
         this.element = game.addPlayer(this);
+    }
+
+    // Function to get the player's name
+    getName() {
+        return this.name;
+    }
+
+    setName(name) {
+        this.name = name;
     }
 
     // Function to get the current horizontal player speed
