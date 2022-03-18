@@ -33,7 +33,6 @@ h2 {
     font-family: "Press Start 2P", monospace;
     
     color: #ffe96e;
-    /* font-size: 2rem; */
     font-family: "Press Start 2P", monospace;
     filter: drop-shadow(0px 2px 0 #db783f) drop-shadow(0px 2px 0 #000) drop-shadow(2px 0px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000);
     margin: 1rem 0;
@@ -127,6 +126,35 @@ main {
 /* Splash Screen */
 /* #splash-screen {
 } */
+
+/* Setup Screen */
+#setup-screen input[type="text"] {
+    display: block;
+    width: 15rem;
+    margin: 0 auto 1rem;
+    padding: 0.25rem;
+    text-align: center;
+    font-family: 'Press Start 2P';
+    font-size: 2rem;
+    border: none;
+    border-bottom: 2px solid #fff;
+    color: white;
+    background: none;
+    filter: drop-shadow(0px 2px 0 #707070) drop-shadow(0px 2px 0 #000) drop-shadow(2px 0px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000);
+}
+#setup-screen label {
+    display: inline-block;
+    margin: 1rem 0;
+    font-family: 'Press Start 2P';
+    font-size: 0.875rem;
+    color: #fff;
+    filter: drop-shadow(0px 2px 0 #707070) drop-shadow(0px 2px 0 #000) drop-shadow(2px 0px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000);
+}
+
+#setup-screen input[type="text"]:focus {
+    outline: none;
+    border-bottom: 2px solid #ffe96e;
+}
 
 
 /* Instructions Screen */
@@ -261,6 +289,9 @@ main {
     margin: 0 auto 1rem;
     font-family: "Press Start 2P", monospace;
     border-collapse: collapse;
+}
+
+.leaderboard tr {
     color: #ffffff;
     filter: drop-shadow(0px 2px 0 #707070) drop-shadow(0px 2px 0 #000) drop-shadow(2px 0px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000);
 }
@@ -268,6 +299,11 @@ main {
 .leaderboard td,
 .leaderboard th {
     padding: 0.5rem 1rem;
+}
+
+.leaderboard .player-score {
+    color: #ffdd48;
+    filter: drop-shadow(0px 2px 0 #db783f) drop-shadow(0px 2px 0 #000) drop-shadow(2px 0px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000);
 }
 
 /* Modals */

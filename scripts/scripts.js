@@ -28,12 +28,11 @@ const game = {
     $gameOverScreen: $("#game-over-screen"),
 
     // Game Elements
+    $nameBox: $("#name"), 
     $pathContainer: $("#path-container"),
     $distanceValue: $(".distance .distance-value"),
     $bestDistanceValue: $(".best-distance .distance-value"),
     $finalScoreValue: $(".final-score-value"),
-
-    // Leaderboard
     $leaderboardList: $(".leaderboard-list"),
 
     // Modals
@@ -303,21 +302,23 @@ const game = {
 
     // Update each path object
     updatePaths: () => {
-        for (let i = 0; i < game.paths.length; i++) {
-            let path = game.paths[i];
-            path.update();
-
-            // Check if any part of the entire player overlaps with the current path, if so, check the individual hitboxes, if there is a hitbox collision, the game is over
-            if(game.player.overlapsVertically(path)) {
-                if (game.player.checkHitboxCollisions(path) ) {
-                    game.gameOver();
-                    break
-                };
-            }
-
-            if (path.isOffScreen()) {
-                game.generateDirectedPath(path);
-                // game.generateRandomPath(path);
+        if (game.isRunning) {
+            for (let i = 0; i < game.paths.length; i++) {
+                let path = game.paths[i];
+                path.update();
+    
+                // Check if any part of the entire player overlaps with the current path, if so, check the individual hitboxes, if there is a hitbox collision, the game is over
+                if(game.player.overlapsVertically(path)) {
+                    if (game.player.checkHitboxCollisions(path) ) {
+                        game.gameOver();
+                        break
+                    };
+                }
+    
+                if (path.isOffScreen()) {
+                    game.generateDirectedPath(path);
+                    // game.generateRandomPath(path);
+                }
             }
         }
     },
@@ -479,40 +480,43 @@ const game = {
     // ======================================================
     // Move the background positions to match the scrolling of the path blocks
     scrollBackground: () => {
-        
-        // Scroll the background for all paths
-        $(".path").css("background-position-y",game.backgroundScroll)
-        
-        // Scroll the background for all paths
-        game.$gameScreen.css("background-position-y",game.backgroundScroll)
-
-        game.backgroundScroll+=game.scrollSpeed;
-
-        if (game.backgroundScroll >= game.screenHeight) {
-            game.backgroundScroll -= game.screenHeight;
+        if (game.isRunning) {
+            // Scroll the background for all paths
+            $(".path").css("background-position-y",game.backgroundScroll)
+            
+            // Scroll the background for all paths
+            game.$gameScreen.css("background-position-y",game.backgroundScroll)
+    
+            game.backgroundScroll+=game.scrollSpeed;
+    
+            if (game.backgroundScroll >= game.screenHeight) {
+                game.backgroundScroll -= game.screenHeight;
+            }
         }
     },
 
     updateDistance: (displayZero=false) => {
-        // Update the distanceScrolled variable and display that
-        // If displayZero is optionally set to true, then just show a zero
-        if (!displayZero) {
-            game.distanceScrolled += game.scrollSpeed;
-            // Update Distance value display in UI
-            // Compensate for player distance offset to top of screen, and offset of extra paths to top of screen
-            let distanceScrolledPixels = game.distanceScrolled - game.initialDistanceOffset - (game.initialPathHeight*game.extraPaths);
-            // Convert distance to "Meters" and round to nearest tenth of a meter
-            game.distanceScrolledMeters = Math.round(distanceScrolledPixels/game.pixelsPerMeter);
-            game.$distanceValue.text(game.distanceScrolledMeters);
-
-            // Check if current distance is greater than the best distance
-            if (game.distanceScrolledMeters >= game.bestDistance) {
-                game.bestDistance = game.distanceScrolledMeters;
-                game.$bestDistanceValue.text(game.bestDistance);
-
+        if (game.isRunning) {
+            // Update the distanceScrolled variable and display that
+            // If displayZero is optionally set to true, then just show a zero
+            if (!displayZero) {
+                game.distanceScrolled += game.scrollSpeed;
+                // Update Distance value display in UI
+                // Compensate for player distance offset to top of screen, and offset of extra paths to top of screen
+                let distanceScrolledPixels = game.distanceScrolled - game.initialDistanceOffset - (game.initialPathHeight*game.extraPaths);
+                // Convert distance to "Meters" and round to nearest tenth of a meter
+                game.distanceScrolledMeters = Math.round(distanceScrolledPixels/game.pixelsPerMeter);
+                game.$distanceValue.text(game.distanceScrolledMeters);
+    
+                // Check if current distance is greater than the best distance
+                if (game.distanceScrolledMeters >= game.bestDistance) {
+                    game.bestDistance = game.distanceScrolledMeters;
+                    game.$bestDistanceValue.text(game.bestDistance);
+    
+                }
+            } else {
+                game.$distanceValue.text("0");
             }
-        } else {
-            game.$distanceValue.text("0");
         }
 
     },
@@ -555,6 +559,11 @@ const game = {
                     <td>${player.name}</td>
                     <td>${player.score}m</td>
                 </tr>`);
+            
+            // If the leaderboard name matches the current player name, then identify those players with the player-score class
+            if (player.name == game.player.name) {
+                $newRow.addClass("player-score")
+            }
             game.$leaderboardList.append($newRow);
         })
     },
@@ -588,7 +597,7 @@ const game = {
             e.preventDefault();
             
             game.reset();
-            game.switchScreen("game-screen");
+            game.switchScreen("setup-screen");
         })
 
         // Instructions Button
@@ -603,6 +612,18 @@ const game = {
             e.preventDefault();
             
             game.switchScreen(game.lastScreen);
+        })
+        
+        // Play Button
+        game.$playBtn.click((e) => {
+            e.preventDefault();
+
+            // If the player entered a name, use it
+            if (game.$nameBox.val() != "") {
+                game.player.setName(game.$nameBox.val());
+            }
+            
+            game.switchScreen("game-screen");
         })
 
         // Play Again Buttons 
