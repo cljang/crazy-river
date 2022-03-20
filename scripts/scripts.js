@@ -12,6 +12,8 @@ const game = {
     // Buttons
     $startBtn: $(".start-btn"),
     $instructionsBtn: $(".instructions-btn"),
+    $homeBtn: $(".home-btn"),
+    $controlsBtn: $(".controls-btn"),
     $backBtn: $(".back-btn"),
     $playBtn: $(".play-btn"),
     $playAgainBtn: $(".play-again-btn"),
@@ -49,16 +51,11 @@ const game = {
     // Screens
     screen: "splash-screen",
     lastScreen: "splash-screen",
-    gameScreens: ["splash-screen", "instructions-screen", "setup-screen", "game-screen", "game-over-screen", "leaderboard-screen"],
+    gameScreens: ["splash-screen", "instructions-screen", "controls-screen", "setup-screen", "game-screen", "game-over-screen", "leaderboard-screen"],
 
     // Game Update Loop
     updateInterval: 20,
     intervalID: null,
-
-    // Animation - currently unused
-    // animFrameID: null,
-    // clampInterval: 30,
-    // startTimestamp: undefined,
 
     // Screen Dimensions - Set in init()
     screenWidth: 0,
@@ -89,7 +86,6 @@ const game = {
     pathAdjustmentPathCounter: 0,
     pathAdjustmentPeriod: 10,  // Paths per adjustment cycle
 
-    
     // Player 
     // Player object
     player: null,
@@ -142,6 +138,14 @@ const game = {
         }, 
     ],
 
+    // Sounds
+    clickSound: new Audio("./media/click.wav"),
+    smackSound: new Audio("./media/smack.wav"),
+    smackVolume: 0.5,
+    bgMusic: new Audio("./media/synth-music-80.mp3"),
+    bgVolume: 0.2,
+    bgSpeedIncrement: 0.1,
+
     // ======================================================
     // Game Functions
     // ======================================================
@@ -150,12 +154,17 @@ const game = {
         game.isRunning = false;
         game.$gameScreen.addClass("paused")
         game.stopUpdate();
+
+        game.pauseSound(game.bgMusic);
     },
 
     clearPaused: () => {
         game.isRunning = true;
         game.$gameScreen.removeClass("paused")
         game.runUpdate();
+        
+        // Play background music at 20% volume
+        game.playSound(game.bgMusic, game.bgVolume);
     },
 
     gameOver: () => {
@@ -163,6 +172,7 @@ const game = {
         game.switchScreen("game-over-screen");
         game.$finalScoreValue.text(game.distanceScrolledMeters);
         game.updateLeaderboard();
+        game.pauseSound(game.bgMusic);
     },
     
     reset: () => {
@@ -191,6 +201,9 @@ const game = {
 
         // Reset player
         game.player.reset();
+
+        // Reset BG Music speed
+        game.resetSoundSpeed(game.bgMusic);
     },
     
     // ======================================================
@@ -310,6 +323,7 @@ const game = {
                 // Check if any part of the entire player overlaps with the current path, if so, check the individual hitboxes, if there is a hitbox collision, the game is over
                 if(game.player.overlapsVertically(path)) {
                     if (game.player.checkHitboxCollisions(path) ) {
+                        game.playSound(game.smackSound, game.smackVolume);
                         game.gameOver();
                         break
                     };
@@ -527,6 +541,8 @@ const game = {
         if (game.distanceScrolledMeters >= game.speedAdjustmentPeriod) {
             game.speedAdjustmentPeriod *= 2;
             game.scrollSpeed += game.scrollSpeedIncrement;
+            // Increase background music playback
+            game.bgMusic.playbackRate += game.bgSpeedIncrement;
         }
     },
 
@@ -569,6 +585,28 @@ const game = {
     },
 
     // ======================================================
+    // Sound Functions
+    // ======================================================
+    playSound: (sound, volume, playbackRate) => {
+        if (volume) {
+            sound.volume = volume;
+        }
+        if (playbackRate) {
+            sound.playbackRate = playbackRate;
+        }
+        sound.currentTime = 0;
+        sound.play();
+    },
+
+    pauseSound: (sound) => {
+        sound.pause();
+    },
+
+    resetSoundSpeed: (sound) => {
+        sound.playbackRate = 1;
+    },
+
+    // ======================================================
     // Initialization Functions
     // ======================================================
     init: () => {
@@ -590,11 +628,17 @@ const game = {
 
         // Update initial distance offset to player position (top)
         game.initialDistanceOffset = game.initialPlayerTop;
+
+        // Make music looping
+        game.bgMusic.addEventListener('ended', function() {
+            game.playSound(game.bgMusic);
+        }, false);
         
 
         // Start Button
         game.$startBtn.click((e) => {
             e.preventDefault();
+            game.playSound(game.clickSound);
             
             game.reset();
             game.switchScreen("setup-screen");
@@ -603,13 +647,23 @@ const game = {
         // Instructions Button
         game.$instructionsBtn.click((e) => {
             e.preventDefault();
+            game.playSound(game.clickSound);
             
             game.switchScreen("instructions-screen");
         })
+        
+        // Controls Button
+        game.$controlsBtn.click((e) => {
+            e.preventDefault();
+            game.playSound(game.clickSound);
+            
+            game.switchScreen("controls-screen");
+        })
 
-        // Instructions Button
+        // Back Button
         game.$backBtn.click((e) => {
             e.preventDefault();
+            game.playSound(game.clickSound);
             
             game.switchScreen(game.lastScreen);
         })
@@ -617,6 +671,7 @@ const game = {
         // Play Button
         game.$playBtn.click((e) => {
             e.preventDefault();
+            game.playSound(game.clickSound);
 
             // If the player entered a name, use it
             if (game.$nameBox.val() != "") {
@@ -629,6 +684,9 @@ const game = {
         // Play Again Buttons 
         game.$playAgainBtn.click((e) => {
             e.preventDefault();
+            game.playSound(game.clickSound);
+            // // Playb background music at 20% volume at default playbackRate
+            // game.playSound(game.bgMusic, game.bgVolume, 1);
 
             game.reset();
             game.switchScreen("game-screen");
@@ -637,6 +695,7 @@ const game = {
         // Leaderboard Button
         game.$leaderboardBtn.click((e) => {
             e.preventDefault();
+            game.playSound(game.clickSound);
             
             game.switchScreen("leaderboard-screen");
         })
@@ -644,21 +703,18 @@ const game = {
         // Quit Buttons 
         game.$quitBtn.click((e) => {
             e.preventDefault();
+            game.playSound(game.clickSound);
 
             game.switchScreen("splash-screen");
         })
 
         // Menu Button
-        game.$menuBtn.click((e) => {
+        game.$homeBtn.click((e) => {
             e.preventDefault();
+            game.playSound(game.clickSound);
 
-            if (game.screen === "game-screen") {
-                if (game.isRunning) {
-                    game.setPaused();
-                } else {
-                    game.clearPaused();
-                }
-            }
+            game.setPaused();
+            game.switchScreen("splash-screen")
         })
 
         // Left Button
@@ -743,12 +799,14 @@ const game = {
                 case "x":
                     e.preventDefault();
                     if (game.screen === "game-screen") {
+                        game.playSound(game.clickSound);
                         if (game.isRunning) {
                             game.setPaused();
                         } else {
                             game.clearPaused();
                         }
                     } else if (game.screen === "game-over-screen") {
+                        game.playSound(game.clickSound);
                         game.reset();
                         game.switchScreen("game-screen");
                     }

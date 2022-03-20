@@ -42,6 +42,12 @@ h2 {
     font-size: 1.5rem;
 }
 
+p {
+    font-family: 'Press Start 2P';
+    font-size: 0.875rem;
+    color: #fff;
+    filter: drop-shadow(0px 2px 0 #707070) drop-shadow(0px 2px 0 #000) drop-shadow(2px 0px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000);
+}
 
 /* Elements
 --------------------------------------------- */
@@ -87,7 +93,7 @@ button {
 main {
     position: relative;
     max-width: 30rem;
-    margin: 1rem auto 4rem;
+    margin: 4rem auto;
     overflow: hidden;
     border-radius: 2rem;
     background-color: #7e5496;
@@ -161,9 +167,13 @@ main {
 /* #instructions-screen {
 } */
 
-#game-area .btn.back-btn {
-    font-size: 0.875rem;
-    padding: 0.5rem;
+#instructions-screen p {
+    text-align: left;
+}
+
+/* Controls Screen */
+#controls-screen p {
+    text-align: left;
 }
 
 /* Game Screen */
@@ -223,12 +233,8 @@ main {
 }
 
 /* Distance Score */
-
 .score {
-    color: #ffffff;
     font-size: 1rem;
-    font-family: "Press Start 2P", monospace;
-    filter: drop-shadow(0px 2px 0 #707070) drop-shadow(0px 2px 0 #000) drop-shadow(2px 0px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000);
 }
 
 .distance {
@@ -361,6 +367,11 @@ main {
     transform: translateY(4px);
 }
 
+#game-area .btn.small-btn {
+    font-size: 0.875rem;
+    padding: 0.5rem;
+}
+
 
 /* Controls Area 
 ---------------------------------------------*/
@@ -370,9 +381,11 @@ main {
     /* padding-top: 1rem; */
 }
 
-.menu-btn {
+#control-area .home-btn {
     display: block;
     margin: 0 auto 2rem;
+    padding: 0.5rem 1rem;
+    background-color: #1e212e;
 }
 
 button.direction-btn {
