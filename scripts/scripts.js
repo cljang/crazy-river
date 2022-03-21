@@ -10,6 +10,7 @@ const game = {
     $gameArea: $("#game-area"),
 
     // Buttons
+    $btns: $(".btn"),
     $startBtn: $(".start-btn"),
     $instructionsBtn: $(".instructions-btn"),
     $homeBtn: $(".home-btn"),
@@ -93,7 +94,7 @@ const game = {
     playerWidth: 50,
     playerHeight: 50,
     // Player movement
-    playerAccelerationFactor: 0.1,
+    playerAccelerationFactor: 0.075,
     playerMaxSpeed: 10,
     // Player Position - Set in init()
     initialPlayerLeft: 0,
@@ -102,49 +103,51 @@ const game = {
     // Vertical game scrolling
     initialScrollSpeed: 4,
     scrollSpeed: 0,             // Set in reset()
-    scrollSpeedIncrement: 2,
     backgroundScroll: 0,
     initialSpeedAdjustmentPeriod: 100,
     speedAdjustmentPeriod: 100, // Path updates per adjustment cycle
     // Compensate for player's initial position
     // Set equal to initialPlayerTop in init() 
     initialDistanceOffset: 0,
-    distanceScrolled: 0,        // In pixels
-    distanceScrolledMeters: 0,        // In pixels
-    pixelsPerMeter: 20,         // Distance conversion factor
+    distanceScrolled: 0,            // In pixels
+    distanceScrolledMeters: 0,      // In "meters"
+    pixelsPerMeter: 20,             // Distance conversion factor
     bestDistance: 0,
 
     // Leaderboard
     leaderboard: [
         {
             name: "CJANG",
-            score: 800
+            score: 1400
         }, 
         {
             name: "FAKER",
-            score: 600
+            score: 1000
         }, 
         {
             name: "[___]",
-            score: 400
+            score: 800
         }, 
         {
             name: "SMILE",
-            score: 200
+            score: 600
         }, 
         {
             name: "STEVE",
-            score: 100
+            score: 400
         }, 
     ],
 
     // Sounds
     clickSound: new Audio("./media/click.wav"),
+    clickVolume: 0.5,
     smackSound: new Audio("./media/smack.wav"),
-    smackVolume: 0.5,
+    smackVolume: 0.2,
+    speedUpSound: new Audio("./media/speed-up.mp3"),
+    speedUpVolume: 0.1,
     bgMusic: new Audio("./media/synth-music-80.mp3"),
-    bgVolume: 0.2,
-    bgSpeedIncrement: 0.1,
+    bgmVolume: 0.1,
+    bgmSpeedIncrement: 0.05,
 
     // ======================================================
     // Game Functions
@@ -164,7 +167,7 @@ const game = {
         game.runUpdate();
         
         // Play background music at 20% volume
-        game.playSound(game.bgMusic, game.bgVolume);
+        game.playSound(game.bgMusic, game.bgmVolume);
     },
 
     gameOver: () => {
@@ -316,7 +319,8 @@ const game = {
     // Update each path object
     updatePaths: () => {
         if (game.isRunning) {
-            for (let i = 0; i < game.paths.length; i++) {
+            // Loop through array backwards to mitigate the problem where
+            for (let i = game.paths.length - 1; i >= 0; i--) {
                 let path = game.paths[i];
                 path.update();
     
@@ -536,13 +540,29 @@ const game = {
     },
 
     // Function to update the speed of the game
-    // Update the speed when the required distance has been passed, double the required distance for the next update
+    // Update the speed when the required distance has been passed
     updateSpeed: () => {
         if (game.distanceScrolledMeters >= game.speedAdjustmentPeriod) {
-            game.speedAdjustmentPeriod *= 2;
-            game.scrollSpeed += game.scrollSpeedIncrement;
+            // For the first speed adjustment period, increase adjustment distance by 100m, after that increase by 200m
+            if (game.speedAdjustmentPeriod == game.initialSpeedAdjustmentPeriod) {
+                game.speedAdjustmentPeriod += 100;
+            } else {
+                game.speedAdjustmentPeriod += 200;
+            }
+            // Increment scroll speed by 1
+            game.scrollSpeed++;
+
             // Increase background music playback
-            game.bgMusic.playbackRate += game.bgSpeedIncrement;
+            game.bgMusic.playbackRate += game.bgmSpeedIncrement;
+
+            // Play Speed Up sound
+            game.playSound(game.speedUpSound,game.speedUpVolume);
+            
+            // Display a Speed Up Message for 1s (1000ms)
+            game.$gameScreen.addClass("speed-up-msg");
+            setTimeout(()=>{
+                game.$gameScreen.removeClass("speed-up-msg");
+            },1000)
         }
     },
 
@@ -634,11 +654,14 @@ const game = {
             game.playSound(game.bgMusic);
         }, false);
         
+        // Add click sound to all buttons
+        game.$btns.click((e) => {
+            game.playSound(game.clickSound, game.clickVolume);
+        })
 
         // Start Button
         game.$startBtn.click((e) => {
             e.preventDefault();
-            game.playSound(game.clickSound);
             
             game.reset();
             game.switchScreen("setup-screen");
@@ -647,7 +670,6 @@ const game = {
         // Instructions Button
         game.$instructionsBtn.click((e) => {
             e.preventDefault();
-            game.playSound(game.clickSound);
             
             game.switchScreen("instructions-screen");
         })
@@ -655,7 +677,6 @@ const game = {
         // Controls Button
         game.$controlsBtn.click((e) => {
             e.preventDefault();
-            game.playSound(game.clickSound);
             
             game.switchScreen("controls-screen");
         })
@@ -663,7 +684,6 @@ const game = {
         // Back Button
         game.$backBtn.click((e) => {
             e.preventDefault();
-            game.playSound(game.clickSound);
             
             game.switchScreen(game.lastScreen);
         })
@@ -671,8 +691,6 @@ const game = {
         // Play Button
         game.$playBtn.click((e) => {
             e.preventDefault();
-            game.playSound(game.clickSound);
-
             // If the player entered a name, use it
             if (game.$nameBox.val() != "") {
                 game.player.setName(game.$nameBox.val());
@@ -684,9 +702,6 @@ const game = {
         // Play Again Buttons 
         game.$playAgainBtn.click((e) => {
             e.preventDefault();
-            game.playSound(game.clickSound);
-            // // Playb background music at 20% volume at default playbackRate
-            // game.playSound(game.bgMusic, game.bgVolume, 1);
 
             game.reset();
             game.switchScreen("game-screen");
@@ -695,7 +710,6 @@ const game = {
         // Leaderboard Button
         game.$leaderboardBtn.click((e) => {
             e.preventDefault();
-            game.playSound(game.clickSound);
             
             game.switchScreen("leaderboard-screen");
         })
@@ -703,7 +717,6 @@ const game = {
         // Quit Buttons 
         game.$quitBtn.click((e) => {
             e.preventDefault();
-            game.playSound(game.clickSound);
 
             game.switchScreen("splash-screen");
         })
@@ -711,7 +724,6 @@ const game = {
         // Menu Button
         game.$homeBtn.click((e) => {
             e.preventDefault();
-            game.playSound(game.clickSound);
 
             game.setPaused();
             game.switchScreen("splash-screen")
@@ -961,7 +973,7 @@ class Path extends Entity {
     // Function to check if the path block has scrolled off the bottom of the screen
     isOffScreen() {
         // Handle bottom bounds
-        if (this.getTop() > game.$pathContainer.height()) {
+        if (this.getTop() >= game.$pathContainer.height()) {
             return true;
         }
         return false;

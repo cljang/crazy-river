@@ -42,7 +42,9 @@ h2 {
     font-size: 1.5rem;
 }
 
-p {
+p, 
+label,
+input[type="text"] {
     font-family: 'Press Start 2P';
     font-size: 0.875rem;
     color: #fff;
@@ -56,7 +58,6 @@ body {
     background-color: #1e212e;
     color: #ffffff;
 }
-
 
 section {
     padding: 1.5rem;
@@ -107,12 +108,9 @@ main {
     position: relative;
     padding: 0;
     margin: 1rem;
-    /* background-color: #ccccee; */
-    background: linear-gradient(180deg, rgba(20,33,41,1) 0%, rgba(6,17,32,1) 100%);
     background: linear-gradient(0deg, rgba(68,134,83,1) 0%, rgba(109,169,240,1) 80%);
     border-radius: 1.5rem;
     box-shadow: inset 0 0 1rem black;
-    /* border: 2px solid #59386d; */
     overflow: hidden;
     filter: drop-shadow(0 -0.25rem #59386d) drop-shadow(0.125rem 0 #59386d) drop-shadow(-0.125rem 0 #9265ac);
 }
@@ -121,7 +119,6 @@ main {
 /* Screens */
 .screen-container {
     color: #1e212e;
-    /* padding: 1.5rem; */
     min-height: 30rem;
     display: block;
     padding: 2rem;
@@ -140,21 +137,14 @@ main {
     margin: 0 auto 1rem;
     padding: 0.25rem;
     text-align: center;
-    font-family: 'Press Start 2P';
     font-size: 2rem;
     border: none;
     border-bottom: 2px solid #fff;
-    color: white;
     background: none;
-    filter: drop-shadow(0px 2px 0 #707070) drop-shadow(0px 2px 0 #000) drop-shadow(2px 0px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000);
 }
 #setup-screen label {
     display: inline-block;
     margin: 1rem 0;
-    font-family: 'Press Start 2P';
-    font-size: 0.875rem;
-    color: #fff;
-    filter: drop-shadow(0px 2px 0 #707070) drop-shadow(0px 2px 0 #000) drop-shadow(2px 0px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000);
 }
 
 #setup-screen input[type="text"]:focus {
@@ -179,15 +169,11 @@ main {
 /* Game Screen */
 #game-screen {
     padding: 0;
-    text-align: unset    ;
-    /* padding: 0; */
+    text-align: unset;
     background-color: #3c653c;
     background-image: url(../images/PLACEHOLDER_grass_80px.jpg);
     background-attachment: fixed;
     background-size: 160px;
-}
-.paused {
-    background-color: #646483;
 }
 
 .paused::after {
@@ -203,8 +189,17 @@ main {
     text-align: center;
 }
 
-.hidden {
-    display: none;
+.speed-up-msg::after {
+    content: "SPEED UP!";
+    position: absolute;
+    top: 20%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-family: "Press Start 2P", monospace;
+    filter: drop-shadow(0px 2px 0 #707070) drop-shadow(0px 2px 0 #000) drop-shadow(2px 0px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000);
+    text-align: center;
 }
 
 /* Path Blocks */
@@ -218,16 +213,13 @@ main {
 .path {
     position: absolute;
     display: inline-block;
-    /* width: 10px;
-    height: 10px; */
-    background-color: #5385ce;
     background-image: url(../images/PLACEHOLDER_water.gif);
     background-attachment: fixed;
     background-size: 80px;
     border-left: 4px solid #38a0ff;
     border-right: 4px solid #38a0ff;
-    /* border-radius: 50%; */
 }
+
 .speed-up {
     filter: hue-rotate(90deg);
 }
@@ -271,11 +263,7 @@ main {
 }
 
 #game-over-screen h2 {
-    color: #ffe96e;
     font-size: 2rem;
-    font-family: "Press Start 2P", monospace;
-    filter: drop-shadow(0px 2px 0 #db783f) drop-shadow(0px 2px 0 #000) drop-shadow(2px 0px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000);
-    margin: 1rem 0;
 }
 
 .final-scores {
@@ -376,24 +364,37 @@ main {
 /* Controls Area 
 ---------------------------------------------*/
 #control-area {
-    /* min-height: 10rem; */
     text-align: center;
-    /* padding-top: 1rem; */
 }
 
 #control-area .home-btn {
     display: block;
     margin: 0 auto 2rem;
     padding: 0.5rem 1rem;
+    position: relative;
+    top: 0px;
+    border: none;
+    border-radius: 0.5rem;
     background-color: #1e212e;
+    color: #373f56;
+    text-shadow: 1px 0 #12131b, 0 -1px #12131b, 1px -1px #12131b;
+    filter: drop-shadow(0 3px #12131b);
+}
+
+#control-area .home-btn:hover {
+    background-color: #272b3a;
+}
+
+#control-area .home-btn:focus {
+    top: 2px;
+    background-color: #272b3a;
+    filter: drop-shadow(0 1px #12131b);
 }
 
 button.direction-btn {
     border: none;
     background: none;
-    /* background-color: #9393ac; */
     border-radius: 50%;
-    /* padding: 1rem; */
     margin: 0 1rem 2rem;
 }
 
