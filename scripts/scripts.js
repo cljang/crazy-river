@@ -33,6 +33,7 @@ const game = {
     // Game Elements
     $nameBox: $("#name"), 
     $pathContainer: $("#path-container"),
+    $playerTrailContainer: $("#player-trail-container"),
     $distanceValue: $(".distance .distance-value"),
     $bestDistanceValue: $(".best-distance .distance-value"),
     $finalScoreValue: $(".final-score-value"),
@@ -47,7 +48,6 @@ const game = {
     // ======================================================
     // General
     isRunning: false,
-    wasRunning: false,
 
     // Screens
     screen: "splash-screen",
@@ -90,6 +90,8 @@ const game = {
     // Player 
     // Player object
     player: null,
+    // Player Image
+    playerImg: "./images/donut.gif",
     // Player dimensions
     playerWidth: 50,
     playerHeight: 50,
@@ -99,6 +101,14 @@ const game = {
     // Player Position - Set in init()
     initialPlayerLeft: 0,
     initialPlayerTop: 350,
+
+    // Player Trails
+    trailSpawnCounter: 0,
+    trailSpawnInterval: 2,
+    playerTrails: [],
+    trailDim: 4,
+    trailLifeSpan: 20,
+    trailAngleLimit: 30,    //30 deg cone
 
     // Vertical game scrolling
     initialScrollSpeed: 4,
@@ -118,23 +128,23 @@ const game = {
     leaderboard: [
         {
             name: "CJANG",
-            score: 1400
-        }, 
-        {
-            name: "FAKER",
             score: 1000
         }, 
         {
-            name: "[___]",
+            name: "FAKER",
             score: 800
         }, 
         {
-            name: "SMILE",
+            name: "[___]",
             score: 600
         }, 
         {
-            name: "STEVE",
+            name: "SMILE",
             score: 400
+        }, 
+        {
+            name: "STEVE",
+            score: 200
         }, 
     ],
 
@@ -152,7 +162,7 @@ const game = {
     // ======================================================
     // Game Functions
     // ======================================================
-
+    // Function to pause the game
     setPaused: () => {
         game.isRunning = false;
         game.$gameScreen.addClass("paused")
@@ -161,6 +171,7 @@ const game = {
         game.pauseSound(game.bgMusic);
     },
 
+    // Function to unpause the game
     clearPaused: () => {
         game.isRunning = true;
         game.$gameScreen.removeClass("paused")
@@ -170,6 +181,7 @@ const game = {
         game.playSound(game.bgMusic, game.bgmVolume);
     },
 
+    // Function to handle game over
     gameOver: () => {
         game.setPaused();
         game.switchScreen("game-over-screen");
@@ -178,6 +190,7 @@ const game = {
         game.pauseSound(game.bgMusic);
     },
     
+    // Function to reset the game
     reset: () => {
         // Set game paused
         game.setPaused();
@@ -205,6 +218,9 @@ const game = {
         // Reset player
         game.player.reset();
 
+        // Destroy any player trails
+        game.destroyPlayerTrails();
+
         // Reset BG Music speed
         game.resetSoundSpeed(game.bgMusic);
     },
@@ -212,6 +228,7 @@ const game = {
     // ======================================================
     // Screen Functions
     // ======================================================
+    // Function to switch between game screens
     switchScreen: (screen) => {
         // Verify that user input is valid
         if (game.gameScreens.includes(screen)) {
@@ -231,7 +248,6 @@ const game = {
         }
     },
 
-    
     // ======================================================
     // Game Update Functions
     // ======================================================
@@ -243,15 +259,16 @@ const game = {
         game.intervalID = setInterval(game.updateLoop, game.updateInterval);
     },
 
-    // function to cancel the animation loop
+    // Function to cancel the update loop
     stopUpdate: () => {
         clearInterval(game.intervalID);
     },
 
-    // Update Loop
+    // Update Loop logic
     updateLoop: () => {
         // Update Player
         game.player.update();
+        game.updatePlayerTrails();
 
         // Update path blocks and background
         game.updatePaths();
@@ -267,16 +284,15 @@ const game = {
     // ======================================================
     // Path Functions
     // ======================================================
-
     // Function to populate the initial paths
     initializePaths: () => {
-
         // Reset pathPosition to the center of the screen
         game.pathPosition = (game.screenWidth - game.initialPathWidth)/2;
 
         // Generate enough paths to cover the screen plus some extra paths for padding
         let numPaths = Math.ceil(game.$gameScreen.height()/game.initialPathHeight) + 1 + game.extraPaths;
-        // Automatically populate paths in a cone shape
+
+        // Automatically populate paths in a cone shape to start
         for(let i = 0; i < numPaths; i++) {
             new Path(
                 game.pathPosition - i*game.tileSize,
@@ -335,48 +351,10 @@ const game = {
     
                 if (path.isOffScreen()) {
                     game.generateDirectedPath(path);
-                    // game.generateRandomPath(path);
                 }
             }
         }
     },
-
-    // Randomly increase/decrease the path width and shift it side to side
-    // generateRandomPath: (path) => {
-    //     // Move path to top of the screen - minus some offset for extra path elements
-    //     path.addTop(-(game.$pathContainer.height() + (game.pathHeight * (game.extraPaths + 1))));
-
-    //     // Randomly adjust width of path element
-    //     // -1, 0, 1 => Shrink by 1 tile, stay same, grow by 1 tile
-    //     const widthOffsetFactor = Math.floor(Math.random() * 3) - 1;
-    //     game.pathWidth += (widthOffsetFactor * game.tileSize);
-        
-    //     // Check width bounds
-    //     if (game.pathWidth <= game.minPathWidth) {
-    //         game.pathWidth = game.minPathWidth;
-    //     }
-    //     if (game.pathWidth >= game.maxPathWidth) {
-    //         game.pathWidth = game.maxPathWidth;
-    //     }
-
-    //     path.setWidth(game.pathWidth);
-
-    //     // Randomly shift path side-to-side
-    //     // -1, 0, 1 => Move left, stay same, move right
-    //     const positionOffsetFactor = Math.floor(Math.random() * 3) - 1;
-    //     game.pathPosition += (positionOffsetFactor * game.tileSize);
-    //     path.setLeft(game.pathPosition);
-
-    //     // Check position bounds
-    //     if (path.getLeft() <= game.leftBound) {
-    //         path.setLeft(game.leftBound);
-    //         game.pathPosition = game.leftBound;
-    //     }
-    //     if (path.getRight() >= game.rightBound) {
-    //         path.setRight(game.rightBound);
-    //         game.pathPosition = game.rightBound - game.pathWidth;
-    //     }
-    // },
 
     generateDirectedPath(path) {
         // Move path to top of the screen - minus some offset for extra path elements
@@ -466,7 +444,6 @@ const game = {
         $player.attr("alt","A pink donut");
         $player.css(playerObj.getPosition());
         $player.outerWidth(playerObj.width);
-        $player.height(playerObj.height);
         game.$gameScreen.append($player);
         return $player;
     },
@@ -491,6 +468,63 @@ const game = {
         } else {
             game.$rightBtn.removeClass("pressed");
         }
+    },
+
+    // ======================================================
+    // Player Trail Functions
+    // ======================================================
+
+    addPlayerTrail: (playerTrailObj) => {
+        const $playerTrail = $("<div></div>").addClass("player-trail");
+        $playerTrail.css(playerTrailObj.getPosition());
+        $playerTrail.outerWidth(playerTrailObj.getWidth());
+        $playerTrail.outerHeight(playerTrailObj.getHeight());
+        game.playerTrails.push(playerTrailObj);
+        game.$playerTrailContainer.append($playerTrail);
+        return $playerTrail;
+    },
+    
+    removePlayerTrail: (playerTrailObj) => {
+        playerTrailObj.element.remove();
+
+        // Find playerTrail in playerTrails array and remove it
+        let index = game.playerTrails.indexOf(playerTrailObj);
+        game.playerTrails.splice(index,1);
+    },
+
+    destroyPlayerTrails: () => {
+        // Destroy all paths
+        game.playerTrails.forEach(playerTrail => {
+            playerTrail.element.remove();
+        })
+        game.playerTrails.length = 0;
+    },
+
+    generateRandomPlayerTrail: () => {
+        let playerAngle = game.player.getRotation();
+        let angleOffset = Math.random()*game.trailAngleLimit - game.trailAngleLimit/2;
+        let trailAngleDeg = playerAngle + angleOffset;
+        // Convert angle from degree to rad
+        let trailAngle = trailAngleDeg/180*Math.PI;
+
+        new PlayerTrail(
+            game.player.getLeft() + (game.player.getWidth() - game.trailDim)/2,
+            game.player.getTop() + (game.player.getHeight() - game.trailDim)/2,
+            trailAngle,
+            game.scrollSpeed/2);
+    },
+
+    updatePlayerTrails: () => {
+        // Spawn a trail every other update
+        if (game.trailSpawnCounter >= game.trailSpawnInterval) {
+            game.generateRandomPlayerTrail();
+            game.trailSpawnCounter = 0;
+        }
+        game.trailSpawnCounter++;
+        // Update each trail
+        game.playerTrails.forEach((trail) => {
+            trail.update();
+        })
     },
 
     // ======================================================
@@ -891,10 +925,12 @@ class Entity {
     // Function to add position to left/top
     addLeft(increment) {
         this.left += increment;
+        this.element.css(this.getPosition());
     }
 
     addTop(increment) {
         this.top += increment;
+        this.element.css(this.getPosition());
     }
 
     // Function to get the width/height of the entity
@@ -990,7 +1026,7 @@ class Player extends Entity {
         super(left,top,game.playerWidth,game.playerHeight);
         
         // Player identifiers
-        this.img = "./images/donut-arrow.svg";
+        this.img = game.playerImg;
         this.name = name;
 
         // Player motion variables
@@ -1127,6 +1163,11 @@ class Player extends Entity {
         }
     }
 
+    // Function to get visual rotation of the player
+    getRotation() {
+        return this.rotation;
+    }
+
     // Function to visually rotate the player
     setRotation(degree) {
         this.rotation = degree;
@@ -1176,6 +1217,37 @@ class Player extends Entity {
         this.setRotation(this.initialRotation);
         this.setMoveLeft(false);
         this.setMoveLeft(false);
+    }
+}
+
+class PlayerTrail extends Entity {
+    constructor(left=0,top=0,angle=0,speed=0) {
+        super(
+            left,
+            top,
+            Math.random()+game.trailDim,
+            Math.random()+game.trailDim);
+        this.angle = angle;
+        this.speed = speed;
+        this.lifespan = game.trailLifeSpan;
+        this.element = game.addPlayerTrail(this);
+    }
+
+    update() {
+        this.addTop(this.speed*Math.cos(this.angle));
+        this.addLeft(this.speed*Math.sin(this.angle));
+        // Modify Opacity based on Lifespan percent (200% - 0%) 
+        // ^Start fading halfway through
+        let lifespanPercent = 2*this.lifespan/game.trailLifeSpan;
+        this.element.css("opacity",lifespanPercent);
+        // Tilt trail element randomly
+        let randomTilt = Math.random()*180;
+        this.element.css("transform",`rotate(${randomTilt}deg)`);
+        this.lifespan--;
+
+        if (this.lifespan <= 0) {
+            game.removePlayerTrail(this);
+        }
     }
 }
 
