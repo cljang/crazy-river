@@ -19,23 +19,46 @@
 /*--------------------------------------------------------------
 # Base
 --------------------------------------------------------------*/
+:root {
+    /* Gameboy and Page Colours */
+    --primary: #7e5496;
+    --primary-shadow: #59386d;
+    --primary-highlight: #9265ac;
+    --secondary: #1e212e;
+    --secondary-shadow: #12131b;
+    --secondary-highlight: #373f56;
+    --secondary-hover: #272b3a;
+    --primary-text: #ffffff;
+
+    /* On Screen Colours */
+    --yellow: #ffe96e;
+    --yellow-shadow: #db783f;
+    --yellow-highlight: #ffffff;
+    --yellow-hover: #ffdd48;
+    --green: #2a8f3b;
+    --green-shadow: #0d4115;
+    --green-highlight: #73d383;
+    --green-hover: #196b27;
+    --red: #b32e2e;
+    --red-shadow: #4b0f0d;
+    --red-highlight: #f39191;
+    --red-hover: #992121;
+
+    /* Game text black outline */
+    --outline: drop-shadow(0px 2px 0 #000) drop-shadow(2px 0px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000);
+
+    /* Font Families */
+    --main-font: Barlow, Arial, Helvetica, sans-serif;
+    --game-font: "Press Start 2P", monospace;
+
+}
 
 /* Typography
 --------------------------------------------- */
 body {
-    font-family: Barlow, Arial, Helvetica, sans-serif;
+    font-family: var(--main-font);
     line-height: 1.5;
     font-size: 1.125rem;
-}
-
-h1,
-h2 {
-    font-family: "Press Start 2P", monospace;
-    
-    color: #ffe96e;
-    font-family: "Press Start 2P", monospace;
-    filter: drop-shadow(0px 2px 0 #db783f) drop-shadow(0px 2px 0 #000) drop-shadow(2px 0px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000);
-    margin: 1rem 0;
 }
 
 h1 {
@@ -46,21 +69,13 @@ h2 {
     font-size: 1.5rem;
 }
 
-p, 
-label,
-input[type="text"] {
-    font-family: 'Press Start 2P';
-    font-size: 0.875rem;
-    color: #fff;
-    filter: drop-shadow(0px 2px 0 #707070) drop-shadow(0px 2px 0 #000) drop-shadow(2px 0px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000);
-}
 
 /* Elements
 --------------------------------------------- */
 body {
     margin: 1rem;
-    background-color: #1e212e;
-    color: #ffffff;
+    background-color: var(--secondary);
+    color: var(--primary-text);
 }
 
 section {
@@ -84,12 +99,15 @@ button {
 ---------------------------------------------*/
 #game-header {
     max-width: 30rem;
-    min-height: 10rem;
-    background-color: #7e5496;
-    padding: 1.5rem;
+    background-color: var(--primary);
+    padding: 0.5rem;
     text-align: center;
-    border-radius: 2rem;
+    border-radius: 1rem;
     margin: 1rem auto;
+}
+
+#game-header h1 {
+    margin: 0;
 }
 
 
@@ -98,11 +116,11 @@ button {
 main {
     position: relative;
     max-width: 30rem;
-    margin: 4rem auto;
+    margin: 1rem auto 4rem;
     overflow: hidden;
     border-radius: 2rem;
-    background-color: #7e5496;
-    filter: drop-shadow(-0.25rem 0 #59386d) drop-shadow(0.25rem 0 #9265ac) drop-shadow(0 2rem #59386d);
+    background-color: var(--primary);
+    filter: drop-shadow(-0.25rem 0 var(--primary-shadow)) drop-shadow(0.25rem 0 var(--primary-highlight)) drop-shadow(0 2rem var(--primary-shadow));
 }
 
 
@@ -114,15 +132,34 @@ main {
     margin: 1rem;
     background: linear-gradient(0deg, #448653 0%, #6da9f0 80%);
     border-radius: 1.5rem;
-    box-shadow: inset 0 0 1rem black;
+    box-shadow: inset 0 0 1rem #000000;
     overflow: hidden;
-    filter: drop-shadow(0 -0.25rem #59386d) drop-shadow(0.125rem 0 #59386d) drop-shadow(-0.125rem 0 #9265ac);
+    filter: drop-shadow(0 -0.25rem var(--primary-shadow)) drop-shadow(0.125rem 0 var(--primary-shadow)) drop-shadow(-0.125rem 0 var(--primary-highlight));
+}
+
+#game-area h1,
+#game-area h2 {
+    font-family: var(--game-font);
+    
+    color: var(--yellow);
+    font-family: var(--game-font);
+    filter: drop-shadow(0px 2px 0 var(--yellow-shadow)) var(--outline);
+    margin: 1rem 0;
+}
+
+#game-area p, 
+#game-area label,
+#game-area input[type="text"] {
+    font-family: 'Press Start 2P';
+    font-size: 0.875rem;
+    color: #ffffff;
+    filter: drop-shadow(0px 2px 0 #707070) var(--outline);
 }
 
 
 /* Screens */
 .screen-container {
-    color: #1e212e;
+    color: var(--secondary);
     min-height: 30rem;
     display: block;
     padding: 2rem;
@@ -137,7 +174,8 @@ main {
     text-align: right;
 }
 
-#splash-screen h1 {
+#splash-screen h2 {
+    font-size: 1.875rem;
     margin-top: 0;
 }
 
@@ -150,7 +188,7 @@ main {
     text-align: center;
     font-size: 2rem;
     border: none;
-    border-bottom: 2px solid #fff;
+    border-bottom: 2px solid #ffffff;
     background: none;
 }
 #setup-screen label {
@@ -160,7 +198,7 @@ main {
 
 #setup-screen input[type="text"]:focus {
     outline: none;
-    border-bottom: 2px solid #ffe96e;
+    border-bottom: 2px solid var(--yellow);
 }
 
 
@@ -181,7 +219,6 @@ main {
 #game-screen {
     padding: 0;
     text-align: unset;
-    background-color: #3c653c;
     background-image: url(../images/PLACEHOLDER_grass_80px.jpg);
     background-attachment: fixed;
     background-size: 160px;
@@ -195,8 +232,8 @@ main {
     transform: translate(-50%, -50%);
     color: #ffffff;
     font-size: 1.5rem;
-    font-family: "Press Start 2P", monospace;
-    filter: drop-shadow(0px 2px 0 #707070) drop-shadow(0px 2px 0 #000) drop-shadow(2px 0px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000);
+    font-family: var(--game-font);
+    filter: drop-shadow(0px 2px 0 #707070) var(--outline);
     text-align: center;
 }
 
@@ -208,8 +245,8 @@ main {
     transform: translate(-50%, -50%);
     color: #ffffff;
     font-size: 1.5rem;
-    font-family: "Press Start 2P", monospace;
-    filter: drop-shadow(0px 2px 0 #707070) drop-shadow(0px 2px 0 #000) drop-shadow(2px 0px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000);
+    font-family: var(--game-font);
+    filter: drop-shadow(0px 2px 0 #707070) var(--outline);
     text-align: center;
 }
 
@@ -236,10 +273,6 @@ main {
 }
 
 /* Distance Score */
-.score {
-    font-size: 1rem;
-}
-
 .distance {
     position: absolute;
     top: 1rem;
@@ -291,11 +324,11 @@ main {
     font-size: 2rem;
 }
 
-.final-scores {
+#game-over-screen .final-scores {
     margin: 1rem 0 2rem;
 }
 
-.final-scores .score {
+#game-over-screen .final-scores .score {
     position: inherit;
     top: auto;
     left: auto;
@@ -306,13 +339,13 @@ main {
 /* Leaderboard Screen */
 .leaderboard {
     margin: 0 auto 1rem;
-    font-family: "Press Start 2P", monospace;
+    font-family: var(--game-font);
     border-collapse: collapse;
 }
 
 .leaderboard tr {
     color: #ffffff;
-    filter: drop-shadow(0px 2px 0 #707070) drop-shadow(0px 2px 0 #000) drop-shadow(2px 0px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000);
+    filter: drop-shadow(0px 2px 0 #707070) var(--outline);
 }
 
 .leaderboard td,
@@ -321,13 +354,8 @@ main {
 }
 
 .leaderboard .player-score {
-    color: #ffdd48;
-    filter: drop-shadow(0px 2px 0 #db783f) drop-shadow(0px 2px 0 #000) drop-shadow(2px 0px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000);
-}
-
-/* Modals */
-.modal {
-    color: #1e212e;
+    color: var(--yellow);
+    filter: drop-shadow(0px 2px 0 var(--yellow-shadow)) var(--outline);
 }
 
 /* In-Game Button Styles */
@@ -336,47 +364,47 @@ main {
     font-family: 'Press Start 2P',monospace;
     padding: 1rem;
     margin: 0.5rem;
-    background-color: #ffe96e;
-    color: #db783f;
-    text-shadow: -1px 0 #fff, 0 1px #fff;
-    box-shadow: 0px 2px 0 #db783f, 2px 0px 0 #fff, 0px -2px 0 #fff, -2px 0px 0 #db783f;
-    filter: drop-shadow(0px 4px 0 #db783f) drop-shadow(0px 2px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000) drop-shadow(2px 0px 0 #000);
+    background-color: var(--yellow);
+    color: var(--yellow-shadow);
+    text-shadow: -1px 0 var(--yellow-highlight), 0 1px var(--yellow-highlight);
+    box-shadow: 0px 2px 0 var(--yellow-shadow), 2px 0px 0 var(--yellow-highlight), 0px -2px 0 var(--yellow-highlight), -2px 0px 0 var(--yellow-shadow);
+    filter: drop-shadow(0px 4px 0 var(--yellow-shadow)) var(--outline);
 }
 
 #game-area .btn:hover,
 #game-area .btn:focus {
-    background-color: #ffdd48;
-    filter: drop-shadow(0px 2px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000) drop-shadow(2px 0px 0 #000);
+    background-color: var(--yellow-hover);
+    filter: var(--outline);
     transform: translateY(4px);
 }
 
 #game-area .btn.green-btn {
-    background-color: #2a8f3b;
+    background-color: var(--green);
     color: #fff;
-    text-shadow: -1px 0 #73d383, 0 1px #73d383;
-    box-shadow: 0px 2px 0 #0d4115, 2px 0px 0 #73d383, 0px -2px 0 #73d383, -2px 0px 0 #0d4115;
-    filter: drop-shadow(0px 4px 0 #0d4115) drop-shadow(0px 2px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000) drop-shadow(2px 0px 0 #000);
+    text-shadow: -1px 0 var(--green-highlight), 0 1px var(--green-highlight);
+    box-shadow: 0px 2px 0 var(--green-shadow), 2px 0px 0 var(--green-highlight), 0px -2px 0 var(--green-highlight), -2px 0px 0 var(--green-shadow);
+    filter: drop-shadow(0px 4px 0 var(--green-shadow)) var(--outline);
 }
 
 #game-area .btn.green-btn:hover,
 #game-area .btn.green-btn:focus {
-    background-color: #196b27;
-    filter: drop-shadow(0px 2px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000) drop-shadow(2px 0px 0 #000);
+    background-color: var(--green-hover);
+    filter: var(--outline);
     transform: translateY(4px);
 }
 
 #game-area .btn.red-btn {
-    background-color: #b32e2e;
-    color: #4b0f0d;
-    text-shadow: -1px 0 #f39191, 0 1px #f39191;
-    box-shadow: 0px 2px 0 #4b0f0d, 2px 0px 0 #f39191, 0px -2px 0 #f39191, -2px 0px 0 #4b0f0d;
-    filter: drop-shadow(0px 4px 0 #4b0f0d) drop-shadow(0px 2px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000) drop-shadow(2px 0px 0 #000);
+    background-color: var(--red);
+    color: var(--red-shadow);
+    text-shadow: -1px 0 var(--red-highlight), 0 1px var(--red-highlight);
+    box-shadow: 0px 2px 0 var(--red-shadow), 2px 0px 0 var(--red-highlight), 0px -2px 0 var(--red-highlight), -2px 0px 0 var(--red-shadow);
+    filter: drop-shadow(0px 4px 0 var(--red-shadow)) var(--outline);
 }
 
 #game-area .btn.red-btn:hover,
 #game-area .btn.red-btn:focus {
-    background-color: #992121;
-    filter: drop-shadow(0px 2px 0 #000) drop-shadow(0px -2px 0 #000) drop-shadow(-2px 0px 0 #000) drop-shadow(2px 0px 0 #000);
+    background-color: var(--red-hover);
+    filter: var(--outline);
     transform: translateY(4px);
 }
 
@@ -400,20 +428,20 @@ main {
     top: 0px;
     border: none;
     border-radius: 0.5rem;
-    background-color: #1e212e;
-    color: #373f56;
-    text-shadow: 1px 0 #12131b, 0 -1px #12131b, 1px -1px #12131b;
-    filter: drop-shadow(0 3px #12131b);
+    background-color: var(--secondary);
+    color: var(--secondary-highlight);
+    text-shadow: 1px 0 var(--secondary-shadow), 0 -1px var(--secondary-shadow), 1px -1px var(--secondary-shadow);
+    filter: drop-shadow(0 3px var(--secondary-shadow));
 }
 
 #control-area .home-btn:hover {
-    background-color: #272b3a;
+    background-color: var(--secondary-hover);
 }
 
 #control-area .home-btn:focus {
     top: 2px;
-    background-color: #272b3a;
-    filter: drop-shadow(0 1px #12131b);
+    background-color: var(--secondary-hover);
+    filter: drop-shadow(0 1px var(--secondary-shadow));
 }
 
 button.direction-btn {
@@ -427,33 +455,33 @@ button.direction-btn {
     position: relative;
     top: 0px;
     height: 4rem;
-    filter: drop-shadow(0 5px #12131b);
+    filter: drop-shadow(0 5px var(--secondary-shadow));
 }
 
 .direction-btn .button-body {
-    fill: #1e212e;
+    fill: var(--secondary);
 }
 
 .direction-btn .button-arrow-shadow {
-    fill:#12131b;
+    fill:var(--secondary-shadow);
 }
 
 .direction-btn .button-arrow {
-    fill:#373f56;
+    fill:var(--secondary-highlight);
 }
 
 
 button.direction-btn:hover .button-body {
-    fill: #272b3a;
+    fill: var(--secondary-hover);
 }
 
 /* Convert to .pressed later */
 button.direction-btn.pressed svg {
     top: 3px;
-    filter: drop-shadow(0 2px #12131b);
+    filter: drop-shadow(0 2px var(--secondary-shadow));
 }
 button.direction-btn.pressed .button-body {
-    fill: #272b3a;
+    fill: var(--secondary-hover);
 }
 
 /* Footer */
