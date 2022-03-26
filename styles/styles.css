@@ -132,9 +132,13 @@ main {
 
 /* Splash Screen */
 #splash-screen {
-    background-image: url(../images/background.png);
+    background-image: url(../images/background.jpg);
     background-size: cover;
     text-align: right;
+}
+
+#splash-screen h1 {
+    margin-top: 0;
 }
 
 /* Setup Screen */

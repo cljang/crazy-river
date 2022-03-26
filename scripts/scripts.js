@@ -1,7 +1,6 @@
 "use strict";
 
-// Change the name of the game object at some point
-const game = {
+const riverGame = {
     
     // ======================================================
     // DOM References
@@ -20,15 +19,12 @@ const game = {
     $playAgainBtn: $(".play-again-btn"),
     $leaderboardBtn: $(".leaderboard-btn"),
     $quitBtn: $(".quit-btn"),
-    $menuBtn: $(".menu-btn"),
     $leftBtn: $(".left-btn"),
     $rightBtn: $(".right-btn"),
 
     // Screens
     $screens: $(".screen-container"),
-    $splashScreen: $("#splash-screen"),
     $gameScreen: $("#game-screen"),
-    $gameOverScreen: $("#game-over-screen"),
 
     // Game Elements
     $nameBox: $("#name"), 
@@ -38,10 +34,6 @@ const game = {
     $bestDistanceValue: $(".best-distance .distance-value"),
     $finalScoreValue: $(".final-score-value"),
     $leaderboardList: $(".leaderboard-list"),
-
-    // Modals
-    $gameInstructions: $("#game-instructions"),
-    $setupInstructions: $("#setup-instructions"),
 
     // ======================================================
     // Game Variables
@@ -80,7 +72,7 @@ const game = {
     pathHeight: 10,
     // Last path (left) position tracker - Initialized in initizePaths()
     pathPosition: 200,
-    extraPaths: 5,
+    extraPaths: 5,          // Used to add padding/buffer at top of screen when moving paths
     // Path Adjustment
     pathWidthAdjustment: 0,
     pathLeftAdjustment: 0,
@@ -91,7 +83,7 @@ const game = {
     // Player object
     player: null,
     // Player Image
-    playerImg: "./images/donut.gif",
+    playerImg: "./images/donut.png",
     // Player dimensions
     playerWidth: 50,
     playerHeight: 50,
@@ -164,65 +156,65 @@ const game = {
     // ======================================================
     // Function to pause the game
     setPaused: () => {
-        game.isRunning = false;
-        game.$gameScreen.addClass("paused")
-        game.stopUpdate();
+        riverGame.isRunning = false;
+        riverGame.$gameScreen.addClass("paused")
+        riverGame.stopUpdate();
 
-        game.pauseSound(game.bgMusic);
+        riverGame.pauseSound(riverGame.bgMusic);
     },
 
     // Function to unpause the game
     clearPaused: () => {
-        game.isRunning = true;
-        game.$gameScreen.removeClass("paused")
-        game.runUpdate();
+        riverGame.isRunning = true;
+        riverGame.$gameScreen.removeClass("paused")
+        riverGame.runUpdate();
         
         // Play background music at 20% volume
-        game.playSound(game.bgMusic, game.bgmVolume);
+        riverGame.playSound(riverGame.bgMusic, riverGame.bgmVolume);
     },
 
     // Function to handle game over
     gameOver: () => {
-        game.setPaused();
-        game.switchScreen("game-over-screen");
-        game.$finalScoreValue.text(game.distanceScrolledMeters);
-        game.updateLeaderboard();
-        game.pauseSound(game.bgMusic);
+        riverGame.setPaused();
+        riverGame.switchScreen("game-over-screen");
+        riverGame.$finalScoreValue.text(riverGame.distanceScrolledMeters);
+        riverGame.updateLeaderboard();
+        riverGame.pauseSound(riverGame.bgMusic);
     },
     
     // Function to reset the game
     reset: () => {
         // Set game paused
-        game.setPaused();
+        riverGame.setPaused();
 
         // Destroy existing paths
-        game.destroyPaths();
+        riverGame.destroyPaths();
 
         // Create new paths
-        game.initializePaths();
+        riverGame.initializePaths();
 
         // Reset Path variables
-        game.pathWidth = game.initialPathWidth;
-        game.pathWidthAdjustment = 0;
-        game.pathLeftAdjustment = 0;
-        game.pathAdjustmentPathCounter = 0;
+        riverGame.pathWidth = riverGame.initialPathWidth;
+        riverGame.pathWidthAdjustment = 0;
+        riverGame.pathLeftAdjustment = 0;
+        riverGame.pathAdjustmentPathCounter = 0;
 
         // Reset speed
-        game.scrollSpeed = game.initialScrollSpeed;
-        game.speedAdjustmentPeriod = game.initialSpeedAdjustmentPeriod;
+        riverGame.scrollSpeed = riverGame.initialScrollSpeed;
+        riverGame.speedAdjustmentPeriod = riverGame.initialSpeedAdjustmentPeriod;
 
         // Reset distance
-        game.distanceScrolled = 0;
-        game.updateDistance(true); 
+        riverGame.distanceScrolled = 0;
+        riverGame.updateDistance(true); 
 
         // Reset player
-        game.player.reset();
+        riverGame.player.reset();
 
         // Destroy any player trails
-        game.destroyPlayerTrails();
+        riverGame.destroyPlayerTrails();
 
         // Reset BG Music speed
-        game.resetSoundSpeed(game.bgMusic);
+        riverGame.resetSoundSpeed(riverGame.bgMusic);
     },
     
     // ======================================================
@@ -231,15 +223,15 @@ const game = {
     // Function to switch between game screens
     switchScreen: (screen) => {
         // Verify that user input is valid
-        if (game.gameScreens.includes(screen)) {
+        if (riverGame.gameScreens.includes(screen)) {
             // Hide all screens
-            game.$screens.hide();
+            riverGame.$screens.hide();
 
             // Record Original Screen
-            game.lastScreen = game.screen;
+            riverGame.lastScreen = riverGame.screen;
     
             // Change screen
-            game.screen = screen;
+            riverGame.screen = screen;
             
             // Show new screen
             $(`#${screen}`).show();
@@ -254,31 +246,31 @@ const game = {
     // Function to run the update loop
     runUpdate: () => {
         // Stop existing update interval
-        game.stopUpdate();
+        riverGame.stopUpdate();
         // Start a new update interval
-        game.intervalID = setInterval(game.updateLoop, game.updateInterval);
+        riverGame.intervalID = setInterval(riverGame.updateLoop, riverGame.updateInterval);
     },
 
     // Function to cancel the update loop
     stopUpdate: () => {
-        clearInterval(game.intervalID);
+        clearInterval(riverGame.intervalID);
     },
 
     // Update Loop logic
     updateLoop: () => {
         // Update Player
-        game.player.update();
-        game.updatePlayerTrails();
+        riverGame.player.update();
+        riverGame.updatePlayerTrails();
 
         // Update path blocks and background
-        game.updatePaths();
-        game.scrollBackground();
+        riverGame.updatePaths();
+        riverGame.scrollBackground();
 
         // Update Score (distance value)
-        game.updateDistance();
+        riverGame.updateDistance();
 
         // Update speed
-        game.updateSpeed()
+        riverGame.updateSpeed()
     },
 
     // ======================================================
@@ -287,18 +279,18 @@ const game = {
     // Function to populate the initial paths
     initializePaths: () => {
         // Reset pathPosition to the center of the screen
-        game.pathPosition = (game.screenWidth - game.initialPathWidth)/2;
+        riverGame.pathPosition = (riverGame.screenWidth - riverGame.initialPathWidth)/2;
 
         // Generate enough paths to cover the screen plus some extra paths for padding
-        let numPaths = Math.ceil(game.$gameScreen.height()/game.initialPathHeight) + 1 + game.extraPaths;
+        let numPaths = Math.ceil(riverGame.$gameScreen.height()/riverGame.initialPathHeight) + 1 + riverGame.extraPaths;
 
         // Automatically populate paths in a cone shape to start
         for(let i = 0; i < numPaths; i++) {
             new Path(
-                game.pathPosition - i*game.tileSize,
-                game.initialPathHeight*(i - game.extraPaths),
-                game.initialPathWidth + i*game.tileSize*2,
-                game.initialPathHeight
+                riverGame.pathPosition - i*riverGame.tileSize,
+                riverGame.initialPathHeight*(i - riverGame.extraPaths),
+                riverGame.initialPathWidth + i*riverGame.tileSize*2,
+                riverGame.initialPathHeight
             )
         }
     },
@@ -306,10 +298,10 @@ const game = {
     // Function to remove all paths
     destroyPaths: () => {
         // Destroy all paths
-        game.paths.forEach(path => {
+        riverGame.paths.forEach(path => {
             path.element.remove();
         })
-        game.paths.length = 0;
+        riverGame.paths.length = 0;
     },
 
     // Function to add a path element to the DOM based on a given path object and also add the path object to the paths array
@@ -318,39 +310,30 @@ const game = {
         $path.css(pathObj.getPosition());
         $path.outerWidth(pathObj.width);
         $path.height(pathObj.height);
-        game.paths.push(pathObj);
-        game.$pathContainer.append($path);
+        riverGame.paths.push(pathObj);
+        riverGame.$pathContainer.append($path);
         return $path;
-    },
-
-    // Function to remove a path element from the DOM and also remove it from the paths array
-    removePath: (pathObj) => {
-        pathObj.element.remove();
-
-        // Find obstacle in obstacle array and remove it
-        let index = game.paths.indexOf(pathObj);
-        game.paths.splice(index,1);
     },
 
     // Update each path object
     updatePaths: () => {
-        if (game.isRunning) {
+        if (riverGame.isRunning) {
             // Loop through array backwards to mitigate the problem where
-            for (let i = game.paths.length - 1; i >= 0; i--) {
-                let path = game.paths[i];
+            for (let i = riverGame.paths.length - 1; i >= 0; i--) {
+                let path = riverGame.paths[i];
                 path.update();
     
                 // Check if any part of the entire player overlaps with the current path, if so, check the individual hitboxes, if there is a hitbox collision, the game is over
-                if(game.player.overlapsVertically(path)) {
-                    if (game.player.checkHitboxCollisions(path) ) {
-                        game.playSound(game.smackSound, game.smackVolume);
-                        game.gameOver();
+                if(riverGame.player.overlapsVertically(path)) {
+                    if (riverGame.player.checkHitboxCollisions(path) ) {
+                        riverGame.playSound(riverGame.smackSound, riverGame.smackVolume);
+                        riverGame.gameOver();
                         break
                     };
                 }
     
                 if (path.isOffScreen()) {
-                    game.generateDirectedPath(path);
+                    riverGame.generateDirectedPath(path);
                 }
             }
         }
@@ -358,7 +341,7 @@ const game = {
 
     generateDirectedPath(path) {
         // Move path to top of the screen - minus some offset for extra path elements
-        path.addTop(-(game.$pathContainer.height() + (game.pathHeight * (game.extraPaths + 1))));
+        path.addTop(-(riverGame.$pathContainer.height() + (riverGame.pathHeight * (riverGame.extraPaths + 1))));
 
         // Remove speed-up class if it exists
         path.element.removeClass("speed-up");
@@ -366,46 +349,46 @@ const game = {
         // Indicate at what point a speed up will happen
         // Height of paths in pixels since "0m" point = game.pathAdjustmentPathCounter*game.pathHeight 
         // Pixels to speedAdjustmentPeriod from "0m" point = game.speedAdjustmentPeriod*game.pixelsPerMeter
-        if ( game.pathAdjustmentPathCounter*game.pathHeight === game.speedAdjustmentPeriod*game.pixelsPerMeter ) {
+        if ( riverGame.pathAdjustmentPathCounter*riverGame.pathHeight === riverGame.speedAdjustmentPeriod*riverGame.pixelsPerMeter ) {
             path.element.addClass("speed-up");
         }
 
         // Update Width
-        game.pathWidth += (game.pathWidthAdjustment * game.tileSize);
+        riverGame.pathWidth += (riverGame.pathWidthAdjustment * riverGame.tileSize);
         
         // Check width bounds - if a bound is hit, set width to the bound and stop adjusting width until next adjustment cycle
-        if (game.pathWidth < game.minPathWidth) {
-            game.pathWidth = game.minPathWidth;
-            game.pathWidthAdjustment = 0;
+        if (riverGame.pathWidth < riverGame.minPathWidth) {
+            riverGame.pathWidth = riverGame.minPathWidth;
+            riverGame.pathWidthAdjustment = 0;
         }
-        if (game.pathWidth > game.maxPathWidth) {
-            game.pathWidth = game.maxPathWidth;
-            game.pathWidthAdjustment = 0;
+        if (riverGame.pathWidth > riverGame.maxPathWidth) {
+            riverGame.pathWidth = riverGame.maxPathWidth;
+            riverGame.pathWidthAdjustment = 0;
         }
 
-        path.setWidth(game.pathWidth);
+        path.setWidth(riverGame.pathWidth);
 
         // Update path position
-        game.pathPosition += (game.pathLeftAdjustment * game.tileSize);
+        riverGame.pathPosition += (riverGame.pathLeftAdjustment * riverGame.tileSize);
         
         // Subtract half of the width offset to keep width growth "centered"
-        game.pathPosition -= (game.pathWidthAdjustment * game.tileSize)/2;
+        riverGame.pathPosition -= (riverGame.pathWidthAdjustment * riverGame.tileSize)/2;
 
         // Check position bounds
-        if (game.pathPosition <= game.leftBound) {
-            game.pathPosition = game.leftBound;
+        if (riverGame.pathPosition <= riverGame.leftBound) {
+            riverGame.pathPosition = riverGame.leftBound;
         }
-        if (game.pathPosition >= game.rightBound - game.pathWidth) {
-            game.pathPosition = game.rightBound - game.pathWidth;
+        if (riverGame.pathPosition >= riverGame.rightBound - riverGame.pathWidth) {
+            riverGame.pathPosition = riverGame.rightBound - riverGame.pathWidth;
         }
         
-        path.setLeft(game.pathPosition);
+        path.setLeft(riverGame.pathPosition);
 
-        game.pathAdjustmentPathCounter++;
+        riverGame.pathAdjustmentPathCounter++;
 
         // Handle path adjustment cycle - after counter passes the set period, get a new path adjustment direction
-        if (game.pathAdjustmentPathCounter % game.pathAdjustmentPeriod == 0) {
-            game.changePathDirections();
+        if (riverGame.pathAdjustmentPathCounter % riverGame.pathAdjustmentPeriod == 0) {
+            riverGame.changePathDirections();
         }
     },
 
@@ -417,21 +400,21 @@ const game = {
         let newLeftAdjustment = Math.floor(Math.random() * 3) - 1;
 
         // Don't allow consecutive straight path cycles
-        if ( game.pathLeftAdjustment == 0 && newLeftAdjustment == 0 ) {
+        if ( riverGame.pathLeftAdjustment == 0 && newLeftAdjustment == 0 ) {
             let plusOrMinus = Math.random() < 0.5 ? -1 : 1;
-            game.pathLeftAdjustment += plusOrMinus;
+            riverGame.pathLeftAdjustment += plusOrMinus;
         }
 
         // If the width adjustment is trying to grow while at the max width, or shrink while at the min width, reverse the width adjustment
         if ( 
-            (game.pathWidth == game.maxPathWidth && newWidthAdjustment == 1) || 
-            ( game.pathWidth == game.minPathWidth && newWidthAdjustment == -1) ) {
+            (riverGame.pathWidth == riverGame.maxPathWidth && newWidthAdjustment == 1) || 
+            ( riverGame.pathWidth == riverGame.minPathWidth && newWidthAdjustment == -1) ) {
             newWidthAdjustment *= -1;
         }
 
         // Update adjustment factors
-        game.pathWidthAdjustment = newWidthAdjustment;
-        game.pathLeftAdjustment = newLeftAdjustment;
+        riverGame.pathWidthAdjustment = newWidthAdjustment;
+        riverGame.pathLeftAdjustment = newLeftAdjustment;
     },
 
     // ======================================================
@@ -444,29 +427,29 @@ const game = {
         $player.attr("alt","A pink donut");
         $player.css(playerObj.getPosition());
         $player.outerWidth(playerObj.width);
-        game.$gameScreen.append($player);
+        riverGame.$gameScreen.append($player);
         return $player;
     },
 
     // Function to handle when left inputs are pressed or released
     leftPressed: (pressed = false) => {
-        game.player.setMoveLeft(pressed);
+        riverGame.player.setMoveLeft(pressed);
 
         if ( pressed ) {
-            game.$leftBtn.addClass("pressed");
+            riverGame.$leftBtn.addClass("pressed");
         } else {
-            game.$leftBtn.removeClass("pressed");
+            riverGame.$leftBtn.removeClass("pressed");
         }
     },
     
     // Function to handle when right inputs are pressed or released
     rightPressed: (pressed = false) => {
-        game.player.setMoveRight(pressed);
+        riverGame.player.setMoveRight(pressed);
 
         if ( pressed ) {
-            game.$rightBtn.addClass("pressed");
+            riverGame.$rightBtn.addClass("pressed");
         } else {
-            game.$rightBtn.removeClass("pressed");
+            riverGame.$rightBtn.removeClass("pressed");
         }
     },
 
@@ -479,8 +462,8 @@ const game = {
         $playerTrail.css(playerTrailObj.getPosition());
         $playerTrail.outerWidth(playerTrailObj.getWidth());
         $playerTrail.outerHeight(playerTrailObj.getHeight());
-        game.playerTrails.push(playerTrailObj);
-        game.$playerTrailContainer.append($playerTrail);
+        riverGame.playerTrails.push(playerTrailObj);
+        riverGame.$playerTrailContainer.append($playerTrail);
         return $playerTrail;
     },
     
@@ -488,41 +471,41 @@ const game = {
         playerTrailObj.element.remove();
 
         // Find playerTrail in playerTrails array and remove it
-        let index = game.playerTrails.indexOf(playerTrailObj);
-        game.playerTrails.splice(index,1);
+        let index = riverGame.playerTrails.indexOf(playerTrailObj);
+        riverGame.playerTrails.splice(index,1);
     },
 
     destroyPlayerTrails: () => {
         // Destroy all paths
-        game.playerTrails.forEach(playerTrail => {
+        riverGame.playerTrails.forEach(playerTrail => {
             playerTrail.element.remove();
         })
-        game.playerTrails.length = 0;
+        riverGame.playerTrails.length = 0;
     },
 
     generateRandomPlayerTrail: () => {
-        let playerAngle = game.player.getRotation();
-        let angleOffset = Math.random()*game.trailAngleLimit - game.trailAngleLimit/2;
+        let playerAngle = riverGame.player.getRotation();
+        let angleOffset = Math.random()*riverGame.trailAngleLimit - riverGame.trailAngleLimit/2;
         let trailAngleDeg = playerAngle + angleOffset;
         // Convert angle from degree to rad
         let trailAngle = trailAngleDeg/180*Math.PI;
 
         new PlayerTrail(
-            game.player.getLeft() + (game.player.getWidth() - game.trailDim)/2,
-            game.player.getTop() + (game.player.getHeight() - game.trailDim)/2,
+            riverGame.player.getLeft() + (riverGame.player.getWidth() - riverGame.trailDim)/2,
+            riverGame.player.getTop() + (riverGame.player.getHeight() - riverGame.trailDim)/2,
             trailAngle,
-            game.scrollSpeed/2);
+            riverGame.scrollSpeed/2);
     },
 
     updatePlayerTrails: () => {
         // Spawn a trail every other update
-        if (game.trailSpawnCounter >= game.trailSpawnInterval) {
-            game.generateRandomPlayerTrail();
-            game.trailSpawnCounter = 0;
+        if (riverGame.trailSpawnCounter >= riverGame.trailSpawnInterval) {
+            riverGame.generateRandomPlayerTrail();
+            riverGame.trailSpawnCounter = 0;
         }
-        game.trailSpawnCounter++;
+        riverGame.trailSpawnCounter++;
         // Update each trail
-        game.playerTrails.forEach((trail) => {
+        riverGame.playerTrails.forEach((trail) => {
             trail.update();
         })
     },
@@ -532,42 +515,42 @@ const game = {
     // ======================================================
     // Move the background positions to match the scrolling of the path blocks
     scrollBackground: () => {
-        if (game.isRunning) {
+        if (riverGame.isRunning) {
             // Scroll the background for all paths
-            $(".path").css("background-position-y",game.backgroundScroll)
+            $(".path").css("background-position-y",riverGame.backgroundScroll)
             
             // Scroll the background for all paths
-            game.$gameScreen.css("background-position-y",game.backgroundScroll)
+            riverGame.$gameScreen.css("background-position-y",riverGame.backgroundScroll)
     
-            game.backgroundScroll+=game.scrollSpeed;
+            riverGame.backgroundScroll+=riverGame.scrollSpeed;
     
-            if (game.backgroundScroll >= game.screenHeight) {
-                game.backgroundScroll -= game.screenHeight;
+            if (riverGame.backgroundScroll >= riverGame.screenHeight) {
+                riverGame.backgroundScroll -= riverGame.screenHeight;
             }
         }
     },
 
     updateDistance: (displayZero=false) => {
-        if (game.isRunning) {
+        if (riverGame.isRunning) {
             // Update the distanceScrolled variable and display that
             // If displayZero is optionally set to true, then just show a zero
             if (!displayZero) {
-                game.distanceScrolled += game.scrollSpeed;
+                riverGame.distanceScrolled += riverGame.scrollSpeed;
                 // Update Distance value display in UI
                 // Compensate for player distance offset to top of screen, and offset of extra paths to top of screen
-                let distanceScrolledPixels = game.distanceScrolled - game.initialDistanceOffset - (game.initialPathHeight*game.extraPaths);
+                let distanceScrolledPixels = riverGame.distanceScrolled - riverGame.initialDistanceOffset - (riverGame.initialPathHeight*riverGame.extraPaths);
                 // Convert distance to "Meters" and round to nearest tenth of a meter
-                game.distanceScrolledMeters = Math.round(distanceScrolledPixels/game.pixelsPerMeter);
-                game.$distanceValue.text(game.distanceScrolledMeters);
+                riverGame.distanceScrolledMeters = Math.round(distanceScrolledPixels/riverGame.pixelsPerMeter);
+                riverGame.$distanceValue.text(riverGame.distanceScrolledMeters);
     
                 // Check if current distance is greater than the best distance
-                if (game.distanceScrolledMeters >= game.bestDistance) {
-                    game.bestDistance = game.distanceScrolledMeters;
-                    game.$bestDistanceValue.text(game.bestDistance);
+                if (riverGame.distanceScrolledMeters >= riverGame.bestDistance) {
+                    riverGame.bestDistance = riverGame.distanceScrolledMeters;
+                    riverGame.$bestDistanceValue.text(riverGame.bestDistance);
     
                 }
             } else {
-                game.$distanceValue.text("0");
+                riverGame.$distanceValue.text("0");
             }
         }
 
@@ -576,26 +559,26 @@ const game = {
     // Function to update the speed of the game
     // Update the speed when the required distance has been passed
     updateSpeed: () => {
-        if (game.distanceScrolledMeters >= game.speedAdjustmentPeriod) {
+        if (riverGame.distanceScrolledMeters >= riverGame.speedAdjustmentPeriod) {
             // For the first speed adjustment period, increase adjustment distance by 100m, after that increase by 200m
-            if (game.speedAdjustmentPeriod == game.initialSpeedAdjustmentPeriod) {
-                game.speedAdjustmentPeriod += 100;
+            if (riverGame.speedAdjustmentPeriod == riverGame.initialSpeedAdjustmentPeriod) {
+                riverGame.speedAdjustmentPeriod += 100;
             } else {
-                game.speedAdjustmentPeriod += 200;
+                riverGame.speedAdjustmentPeriod += 200;
             }
             // Increment scroll speed by 1
-            game.scrollSpeed++;
+            riverGame.scrollSpeed++;
 
             // Increase background music playback
-            game.bgMusic.playbackRate += game.bgmSpeedIncrement;
+            riverGame.bgMusic.playbackRate += riverGame.bgmSpeedIncrement;
 
             // Play Speed Up sound
-            game.playSound(game.speedUpSound,game.speedUpVolume);
+            riverGame.playSound(riverGame.speedUpSound,riverGame.speedUpVolume);
             
             // Display a Speed Up Message for 1s (1000ms)
-            game.$gameScreen.addClass("speed-up-msg");
+            riverGame.$gameScreen.addClass("speed-up-msg");
             setTimeout(()=>{
-                game.$gameScreen.removeClass("speed-up-msg");
+                riverGame.$gameScreen.removeClass("speed-up-msg");
             },1000)
         }
     },
@@ -605,24 +588,24 @@ const game = {
     // ======================================================
     updateLeaderboard: () => {
         // Check if player's current score exceeds any of the existing leaderboard scores, if so, splice the player's score into the leaderboard and break out of the loop
-        for (let i = 0; i < game.leaderboard.length; i++) {
-            if (game.distanceScrolledMeters > game.leaderboard[i].score) {
-                game.leaderboard.splice(i,0,{
-                    name: game.player.getName(),
-                    score: game.distanceScrolledMeters
+        for (let i = 0; i < riverGame.leaderboard.length; i++) {
+            if (riverGame.distanceScrolledMeters > riverGame.leaderboard[i].score) {
+                riverGame.leaderboard.splice(i,0,{
+                    name: riverGame.player.getName(),
+                    score: riverGame.distanceScrolledMeters
                 })
                 break;
             }
         }
 
         // Limit leaderboard to top 5
-        game.leaderboard = game.leaderboard.slice(0,5);
+        riverGame.leaderboard = riverGame.leaderboard.slice(0,5);
 
         // Empty DOM leaderboard
-        game.$leaderboardList.empty();
+        riverGame.$leaderboardList.empty();
 
         // Redraw DOM Leaderboard
-        game.leaderboard.forEach((player,index) => {
+        riverGame.leaderboard.forEach((player,index) => {
             let $newRow = $(
                 `<tr>
                     <td>${index+1}.</td>
@@ -631,10 +614,10 @@ const game = {
                 </tr>`);
             
             // If the leaderboard name matches the current player name, then identify those players with the player-score class
-            if (player.name == game.player.name) {
+            if (player.name == riverGame.player.name) {
                 $newRow.addClass("player-score")
             }
-            game.$leaderboardList.append($newRow);
+            riverGame.$leaderboardList.append($newRow);
         })
     },
 
@@ -665,128 +648,128 @@ const game = {
     // ======================================================
     init: () => {
         // Update screen dimensions
-        game.screenWidth = game.$gameArea.width();
-        game.screenHeight = game.$gameArea.height();
+        riverGame.screenWidth = riverGame.$gameArea.width();
+        riverGame.screenHeight = riverGame.$gameArea.height();
 
         // Update left and right bound based on gameArea
-        game.leftBound = game.boundMargin;
-        game.rightBound = game.screenWidth - game.boundMargin;
+        riverGame.leftBound = riverGame.boundMargin;
+        riverGame.rightBound = riverGame.screenWidth - riverGame.boundMargin;
 
         // Set initial path width to halfway between the min and max path width
-        game.initialPathWidth = (game.minPathWidth + game.maxPathWidth)/2;
+        riverGame.initialPathWidth = (riverGame.minPathWidth + riverGame.maxPathWidth)/2;
 
         // Create Player
         // Center player horizontally
-        game.initialPlayerLeft = game.screenWidth/2 - game.playerWidth/2;
-        game.player = new Player(game.initialPlayerLeft, game.initialPlayerTop, "NAME")
+        riverGame.initialPlayerLeft = riverGame.screenWidth/2 - riverGame.playerWidth/2;
+        riverGame.player = new Player(riverGame.initialPlayerLeft, riverGame.initialPlayerTop, "NAME")
 
         // Update initial distance offset to player position (top)
-        game.initialDistanceOffset = game.initialPlayerTop;
+        riverGame.initialDistanceOffset = riverGame.initialPlayerTop;
 
         // Make music looping
-        game.bgMusic.addEventListener('ended', function() {
-            game.playSound(game.bgMusic);
+        riverGame.bgMusic.addEventListener('ended', function() {
+            riverGame.playSound(riverGame.bgMusic);
         }, false);
         
         // Add click sound to all buttons
-        game.$btns.click((e) => {
-            game.playSound(game.clickSound, game.clickVolume);
+        riverGame.$btns.click((e) => {
+            riverGame.playSound(riverGame.clickSound, riverGame.clickVolume);
         })
 
         // Start Button
-        game.$startBtn.click((e) => {
+        riverGame.$startBtn.click((e) => {
             e.preventDefault();
             
-            game.reset();
-            game.switchScreen("setup-screen");
+            riverGame.reset();
+            riverGame.switchScreen("setup-screen");
         })
 
         // Instructions Button
-        game.$instructionsBtn.click((e) => {
+        riverGame.$instructionsBtn.click((e) => {
             e.preventDefault();
             
-            game.switchScreen("instructions-screen");
+            riverGame.switchScreen("instructions-screen");
         })
         
         // Controls Button
-        game.$controlsBtn.click((e) => {
+        riverGame.$controlsBtn.click((e) => {
             e.preventDefault();
             
-            game.switchScreen("controls-screen");
+            riverGame.switchScreen("controls-screen");
         })
 
         // Back Button
-        game.$backBtn.click((e) => {
+        riverGame.$backBtn.click((e) => {
             e.preventDefault();
             
-            game.switchScreen(game.lastScreen);
+            riverGame.switchScreen(riverGame.lastScreen);
         })
         
         // Play Button
-        game.$playBtn.click((e) => {
+        riverGame.$playBtn.click((e) => {
             e.preventDefault();
             // If the player entered a name, use it
-            if (game.$nameBox.val() != "") {
-                game.player.setName(game.$nameBox.val());
+            if (riverGame.$nameBox.val() != "") {
+                riverGame.player.setName(riverGame.$nameBox.val());
             }
             
-            game.switchScreen("game-screen");
+            riverGame.switchScreen("game-screen");
         })
 
         // Play Again Buttons 
-        game.$playAgainBtn.click((e) => {
+        riverGame.$playAgainBtn.click((e) => {
             e.preventDefault();
 
-            game.reset();
-            game.switchScreen("game-screen");
+            riverGame.reset();
+            riverGame.switchScreen("game-screen");
         })
 
         // Leaderboard Button
-        game.$leaderboardBtn.click((e) => {
+        riverGame.$leaderboardBtn.click((e) => {
             e.preventDefault();
             
-            game.switchScreen("leaderboard-screen");
+            riverGame.switchScreen("leaderboard-screen");
         })
 
         // Quit Buttons 
-        game.$quitBtn.click((e) => {
+        riverGame.$quitBtn.click((e) => {
             e.preventDefault();
 
-            game.switchScreen("splash-screen");
+            riverGame.switchScreen("splash-screen");
         })
 
-        // Menu Button
-        game.$homeBtn.click((e) => {
+        // Home Button
+        riverGame.$homeBtn.click((e) => {
             e.preventDefault();
 
-            game.setPaused();
-            game.switchScreen("splash-screen")
+            riverGame.setPaused();
+            riverGame.switchScreen("splash-screen")
         })
 
         // Left Button
-        game.$leftBtn.mousedown((e) => {
+        riverGame.$leftBtn.mousedown((e) => {
             e.preventDefault();
 
-            game.leftPressed(true);
+            riverGame.leftPressed(true);
         })
         
-        game.$leftBtn.mouseup((e) => {
+        riverGame.$leftBtn.mouseup((e) => {
             e.preventDefault();
 
-            game.leftPressed(false);
+            riverGame.leftPressed(false);
         })
 
         // Right Button
-        game.$rightBtn.mousedown((e) => {
+        riverGame.$rightBtn.mousedown((e) => {
             e.preventDefault();
 
-            game.rightPressed(true);
+            riverGame.rightPressed(true);
         })
         
-        game.$rightBtn.mouseup((e) => {
+        riverGame.$rightBtn.mouseup((e) => {
             e.preventDefault();
 
-            game.rightPressed(false);
+            riverGame.rightPressed(false);
         })
 
         // Player Keyboard Controls
@@ -796,28 +779,28 @@ const game = {
                 case "A":
                 case "a":
                 case "ArrowLeft":
-                    game.leftPressed(true);
+                    riverGame.leftPressed(true);
                     break;
                     
                 case "D":
                 case "d":
                 case "ArrowRight":
-                    game.rightPressed(true);
+                    riverGame.rightPressed(true);
                     break;
                 
                 // Open instructions screen on splash page 
                 case "I":
                 case "i":
-                    if (game.screen === "splash-screen") {
-                        game.switchScreen("instructions-screen")
+                    if (riverGame.screen === "splash-screen") {
+                        riverGame.switchScreen("instructions-screen")
                     }
                     break;
 
                 // Return to previous screen on screens where there is a back button 
                 case "Escape":
                 case "Backspace":
-                    if (game.screen === "instructions-screen" || game.screen === "leaderboard-screen") {
-                        game.switchScreen(game.lastScreen);
+                    if (riverGame.screen === "instructions-screen" || riverGame.screen === "leaderboard-screen") {
+                        riverGame.switchScreen(riverGame.lastScreen);
                     }
                     break;
                         
@@ -832,29 +815,29 @@ const game = {
                 case "A":
                 case "a":
                 case "ArrowLeft":
-                    game.leftPressed(false);
+                    riverGame.leftPressed(false);
                     break;
                     
                 case "D":
                 case "d":
                 case "ArrowRight":
-                    game.rightPressed(false);
+                    riverGame.rightPressed(false);
                     break;
 
                 case "X":
                 case "x":
                     e.preventDefault();
-                    if (game.screen === "game-screen") {
-                        game.playSound(game.clickSound);
-                        if (game.isRunning) {
-                            game.setPaused();
+                    if (riverGame.screen === "game-screen") {
+                        riverGame.playSound(riverGame.clickSound);
+                        if (riverGame.isRunning) {
+                            riverGame.setPaused();
                         } else {
-                            game.clearPaused();
+                            riverGame.clearPaused();
                         }
-                    } else if (game.screen === "game-over-screen") {
-                        game.playSound(game.clickSound);
-                        game.reset();
-                        game.switchScreen("game-screen");
+                    } else if (riverGame.screen === "game-over-screen") {
+                        riverGame.playSound(riverGame.clickSound);
+                        riverGame.reset();
+                        riverGame.switchScreen("game-screen");
                     }
                         
                 default:
@@ -863,7 +846,7 @@ const game = {
         })
 
         // Reset the game to the initial state
-        game.reset()
+        riverGame.reset()
     }
 }
 
@@ -994,22 +977,22 @@ class Entity {
 }
 
 class Path extends Entity {
-    constructor(left=0,top=0,width=game.initialPathWidth,height=game.initialPathHeight) {
+    constructor(left=0,top=0,width=riverGame.initialPathWidth,height=riverGame.initialPathHeight) {
         super(left,top,width,height);
-        this.element = game.addPath(this);
+        this.element = riverGame.addPath(this);
     }
 
     // Function to move the obstacle based on the set scroll speed
     // Vertical scroll down
     move() {
-        this.addTop(game.scrollSpeed);
+        this.addTop(riverGame.scrollSpeed);
         this.element.css(this.getPosition());
     }
 
     // Function to check if the path block has scrolled off the bottom of the screen
     isOffScreen() {
         // Handle bottom bounds
-        if (this.getTop() >= game.$pathContainer.height()) {
+        if (this.getTop() >= riverGame.$pathContainer.height()) {
             return true;
         }
         return false;
@@ -1023,16 +1006,16 @@ class Path extends Entity {
 
 class Player extends Entity {
     constructor(left=0,top=0, name="") {
-        super(left,top,game.playerWidth,game.playerHeight);
+        super(left,top,riverGame.playerWidth,riverGame.playerHeight);
         
         // Player identifiers
-        this.img = game.playerImg;
+        this.img = riverGame.playerImg;
         this.name = name;
 
         // Player motion variables
         this.speed = 0;
-        this.maxSpeed = game.playerMaxSpeed;
-        this.accelerationFactor = game.playerAccelerationFactor;
+        this.maxSpeed = riverGame.playerMaxSpeed;
+        this.accelerationFactor = riverGame.playerAccelerationFactor;
         this.movingLeft = false;
         this.movingRight = false
         this.rotation = 0;
@@ -1088,7 +1071,7 @@ class Player extends Entity {
         ]
         
         // Overwrite player element
-        this.element = game.addPlayer(this);
+        this.element = riverGame.addPlayer(this);
     }
 
     // Function to get the player's name
@@ -1142,7 +1125,7 @@ class Player extends Entity {
     move() {
         // Based on movingLeft/Right flags, determine the direction of the speedIncrement
         // Magnitude of speedIncrement is proportional to scrollSpeed, proportion set by accelerationFactor
-        let speedIncrement = (-this.movingLeft + this.movingRight) * game.scrollSpeed * this.accelerationFactor;
+        let speedIncrement = (-this.movingLeft + this.movingRight) * riverGame.scrollSpeed * this.accelerationFactor;
 
         // Update the player speed and check the max speed limit
         this.addSpeed(speedIncrement);
@@ -1155,11 +1138,11 @@ class Player extends Entity {
 
     // Function to check whether the player is out of bounds
     checkBounds() {
-        if(this.getLeft() < game.leftBound) {
-            this.setLeft(game.leftBound);
+        if(this.getLeft() < riverGame.leftBound) {
+            this.setLeft(riverGame.leftBound);
         }
-        if(this.getRight() > game.rightBound) {
-            this.setRight(game.rightBound);
+        if(this.getRight() > riverGame.rightBound) {
+            this.setRight(riverGame.rightBound);
         }
     }
 
@@ -1225,12 +1208,12 @@ class PlayerTrail extends Entity {
         super(
             left,
             top,
-            Math.random()+game.trailDim,
-            Math.random()+game.trailDim);
+            Math.random()+riverGame.trailDim,
+            Math.random()+riverGame.trailDim);
         this.angle = angle;
         this.speed = speed;
-        this.lifespan = game.trailLifeSpan;
-        this.element = game.addPlayerTrail(this);
+        this.lifespan = riverGame.trailLifeSpan;
+        this.element = riverGame.addPlayerTrail(this);
     }
 
     update() {
@@ -1238,7 +1221,7 @@ class PlayerTrail extends Entity {
         this.addLeft(this.speed*Math.sin(this.angle));
         // Modify Opacity based on Lifespan percent (200% - 0%) 
         // ^Start fading halfway through
-        let lifespanPercent = 2*this.lifespan/game.trailLifeSpan;
+        let lifespanPercent = 2*this.lifespan/riverGame.trailLifeSpan;
         this.element.css("opacity",lifespanPercent);
         // Tilt trail element randomly
         let randomTilt = Math.random()*180;
@@ -1246,7 +1229,7 @@ class PlayerTrail extends Entity {
         this.lifespan--;
 
         if (this.lifespan <= 0) {
-            game.removePlayerTrail(this);
+            riverGame.removePlayerTrail(this);
         }
     }
 }
@@ -1256,4 +1239,4 @@ class PlayerTrail extends Entity {
 // ======================================================
 // Run Game
 // ======================================================
-game.init();
+riverGame.init();
