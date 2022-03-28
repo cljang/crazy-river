@@ -203,9 +203,9 @@ const riverGame = {
         riverGame.scrollSpeed = riverGame.initialScrollSpeed;
         riverGame.speedAdjustmentPeriod = riverGame.initialSpeedAdjustmentPeriod;
 
-        // Reset distance
+        // Reset distance and display "0" for the distance
         riverGame.distanceScrolled = 0;
-        riverGame.updateDistance(true); 
+        riverGame.updateDistance("0"); 
 
         // Reset player
         riverGame.player.reset();
@@ -214,7 +214,7 @@ const riverGame = {
         riverGame.destroyPlayerTrails();
 
         // Reset BG Music speed
-        riverGame.resetSoundSpeed(riverGame.bgMusic);
+        riverGame.bgMusic.playbackRate = 1;
     },
     
     // ======================================================
@@ -315,30 +315,29 @@ const riverGame = {
         return $path;
     },
 
-    // Update each path object
+    // Function to update each path object
     updatePaths: () => {
-        if (riverGame.isRunning) {
-            // Loop through array backwards to mitigate the problem where
-            for (let i = riverGame.paths.length - 1; i >= 0; i--) {
-                let path = riverGame.paths[i];
-                path.update();
-    
-                // Check if any part of the entire player overlaps with the current path, if so, check the individual hitboxes, if there is a hitbox collision, the game is over
-                if(riverGame.player.overlapsVertically(path)) {
-                    if (riverGame.player.checkHitboxCollisions(path) ) {
-                        riverGame.playSound(riverGame.smackSound, riverGame.smackVolume);
-                        riverGame.gameOver();
-                        break
-                    };
-                }
-    
-                if (path.isOffScreen()) {
-                    riverGame.generateDirectedPath(path);
-                }
+        // Loop through array backwards to mitigate the problem where
+        for (let i = riverGame.paths.length - 1; i >= 0; i--) {
+            let path = riverGame.paths[i];
+            path.update();
+
+            // Check if any part of the entire player overlaps with the current path, if so, check the individual hitboxes, if there is a hitbox collision, the game is over
+            if(riverGame.player.overlapsVertically(path)) {
+                if (riverGame.player.checkHitboxCollisions(path) ) {
+                    riverGame.playSound(riverGame.smackSound, riverGame.smackVolume);
+                    riverGame.gameOver();
+                    break
+                };
+            }
+
+            if (path.isOffScreen()) {
+                riverGame.generateDirectedPath(path);
             }
         }
     },
 
+    // Function to generate a path based on set of directions, directsion will control the path generation behaviour over the course of a path cycle
     generateDirectedPath(path) {
         // Move path to top of the screen - minus some offset for extra path elements
         path.addTop(-(riverGame.$pathContainer.height() + (riverGame.pathHeight * (riverGame.extraPaths + 1))));
@@ -392,6 +391,7 @@ const riverGame = {
         }
     },
 
+    // Function to generate a new set of directions for the next path cycle 
     changePathDirections() {
         // Set new adjustment factors for width and left position of paths
         // -1, 0, 1 => Shrink by 1 tile, stay same, grow by 1 tile
@@ -456,7 +456,7 @@ const riverGame = {
     // ======================================================
     // Player Trail Functions
     // ======================================================
-
+    // Function to add a path trail elment
     addPlayerTrail: (playerTrailObj) => {
         const $playerTrail = $("<div></div>").addClass("player-trail");
         $playerTrail.css(playerTrailObj.getPosition());
@@ -467,6 +467,7 @@ const riverGame = {
         return $playerTrail;
     },
     
+    // Function to remove a single player trail element
     removePlayerTrail: (playerTrailObj) => {
         playerTrailObj.element.remove();
 
@@ -475,6 +476,7 @@ const riverGame = {
         riverGame.playerTrails.splice(index,1);
     },
 
+    // Function to destroy all player trail elements
     destroyPlayerTrails: () => {
         // Destroy all paths
         riverGame.playerTrails.forEach(playerTrail => {
@@ -483,9 +485,12 @@ const riverGame = {
         riverGame.playerTrails.length = 0;
     },
 
+    // Function to generate the random player trails
     generateRandomPlayerTrail: () => {
         let playerAngle = riverGame.player.getRotation();
+        // Get a offset angle
         let angleOffset = Math.random()*riverGame.trailAngleLimit - riverGame.trailAngleLimit/2;
+        // Add random offset to player angle
         let trailAngleDeg = playerAngle + angleOffset;
         // Convert angle from degree to rad
         let trailAngle = trailAngleDeg/180*Math.PI;
@@ -497,6 +502,7 @@ const riverGame = {
             riverGame.scrollSpeed/2);
     },
 
+    // Function to update the position and rotation of the player trails
     updatePlayerTrails: () => {
         // Spawn a trail every other update
         if (riverGame.trailSpawnCounter >= riverGame.trailSpawnInterval) {
@@ -513,45 +519,44 @@ const riverGame = {
     // ======================================================
     // Scrolling Functions
     // ======================================================
-    // Move the background positions to match the scrolling of the path blocks
+    // Function to move the background positions to visually match the scrolling of the path blocks
     scrollBackground: () => {
-        if (riverGame.isRunning) {
-            // Scroll the background for all paths
-            $(".path").css("background-position-y",riverGame.backgroundScroll)
-            
-            // Scroll the background for all paths
-            riverGame.$gameScreen.css("background-position-y",riverGame.backgroundScroll)
-    
-            riverGame.backgroundScroll+=riverGame.scrollSpeed;
-    
-            if (riverGame.backgroundScroll >= riverGame.screenHeight) {
-                riverGame.backgroundScroll -= riverGame.screenHeight;
-            }
+        // Increment the background scroll position, matching the scroll speed
+        riverGame.backgroundScroll+=riverGame.scrollSpeed;
+
+        // if the background scrolls past the height of the screen, reset it back to the top
+        if (riverGame.backgroundScroll >= riverGame.screenHeight) {
+            riverGame.backgroundScroll -= riverGame.screenHeight;
         }
+        
+        // Scroll the background for all paths
+        $(".path").css("background-position-y",riverGame.backgroundScroll)
+        
+        // Scroll the grass background
+        riverGame.$gameScreen.css("background-position-y",riverGame.backgroundScroll)
     },
 
-    updateDistance: (displayZero=false) => {
-        if (riverGame.isRunning) {
-            // Update the distanceScrolled variable and display that
-            // If displayZero is optionally set to true, then just show a zero
-            if (!displayZero) {
-                riverGame.distanceScrolled += riverGame.scrollSpeed;
-                // Update Distance value display in UI
-                // Compensate for player distance offset to top of screen, and offset of extra paths to top of screen
-                let distanceScrolledPixels = riverGame.distanceScrolled - riverGame.initialDistanceOffset - (riverGame.initialPathHeight*riverGame.extraPaths);
-                // Convert distance to "Meters" and round to nearest tenth of a meter
-                riverGame.distanceScrolledMeters = Math.round(distanceScrolledPixels/riverGame.pixelsPerMeter);
-                riverGame.$distanceValue.text(riverGame.distanceScrolledMeters);
-    
-                // Check if current distance is greater than the best distance
-                if (riverGame.distanceScrolledMeters >= riverGame.bestDistance) {
-                    riverGame.bestDistance = riverGame.distanceScrolledMeters;
-                    riverGame.$bestDistanceValue.text(riverGame.bestDistance);
-    
-                }
-            } else {
-                riverGame.$distanceValue.text("0");
+    // Function to update the distance scores and display it
+    updateDistance: (value) => {
+        // Update the distanceScrolled variable and display that
+        // If value is optionally set, then display that value
+        if (!value) {
+            riverGame.distanceScrolled += riverGame.scrollSpeed;
+            // Update Distance value display in UI
+            // Compensate for player distance offset to top of screen, and offset of extra paths to top of screen
+            let distanceScrolledPixels = riverGame.distanceScrolled - riverGame.initialDistanceOffset - (riverGame.initialPathHeight*riverGame.extraPaths);
+            // Convert distance to "Meters" and round to nearest meter
+            riverGame.distanceScrolledMeters = Math.round(distanceScrolledPixels/riverGame.pixelsPerMeter);
+            riverGame.$distanceValue.text(riverGame.distanceScrolledMeters);
+
+            // Check if current distance is greater than the best distance
+            if (riverGame.distanceScrolledMeters >= riverGame.bestDistance) {
+                riverGame.bestDistance = riverGame.distanceScrolledMeters;
+                riverGame.$bestDistanceValue.text(riverGame.bestDistance);
+
             }
+        } else {
+            riverGame.$distanceValue.text(value);
         }
 
     },
@@ -586,6 +591,7 @@ const riverGame = {
     // ======================================================
     // Leaderboard Functions
     // ======================================================
+    // Function to update leaderboard with top 5 scores
     updateLeaderboard: () => {
         // Check if player's current score exceeds any of the existing leaderboard scores, if so, splice the player's score into the leaderboard and break out of the loop
         for (let i = 0; i < riverGame.leaderboard.length; i++) {
@@ -624,6 +630,7 @@ const riverGame = {
     // ======================================================
     // Sound Functions
     // ======================================================
+    // Function to play a Audio object with controls for volume and speed
     playSound: (sound, volume, playbackRate) => {
         if (volume) {
             sound.volume = volume;
@@ -635,16 +642,13 @@ const riverGame = {
         sound.play();
     },
 
+    // Function to pause a Audio object
     pauseSound: (sound) => {
         sound.pause();
     },
 
-    resetSoundSpeed: (sound) => {
-        sound.playbackRate = 1;
-    },
-
     // ======================================================
-    // Initialization Functions
+    // Initialization Function
     // ======================================================
     init: () => {
         // Update screen dimensions

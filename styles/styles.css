@@ -203,9 +203,6 @@ main {
 
 
 /* Instructions Screen */
-/* #instructions-screen {
-} */
-
 #instructions-screen p {
     text-align: left;
 }
@@ -219,7 +216,7 @@ main {
 #game-screen {
     padding: 0;
     text-align: unset;
-    background-image: url(../images/PLACEHOLDER_grass_80px.jpg);
+    background-image: url(../images/grass.jpg);
     background-attachment: fixed;
     background-size: 160px;
 }
@@ -261,7 +258,7 @@ main {
 .path {
     position: absolute;
     display: inline-block;
-    background-image: url(../images/PLACEHOLDER_water.gif);
+    background-image: url(../images/water.gif);
     background-attachment: fixed;
     background-size: 80px;
     border-left: 4px solid #38a0ff;
@@ -288,6 +285,7 @@ main {
 /* Player */
 .player {
     position: absolute;
+    filter: drop-shadow(-1px 2px 1px #134080);
 }
 
 
