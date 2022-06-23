@@ -776,6 +776,18 @@ const riverGame = {
             riverGame.rightPressed(false);
         })
 
+        // Click screen to start the game
+        riverGame.$gameScreen.click((e) => {
+            if (riverGame.screen === "game-screen") {
+                riverGame.playSound(riverGame.clickSound);
+                if (riverGame.isRunning) {
+                    riverGame.setPaused();
+                } else {
+                    riverGame.clearPaused();
+                }
+            }
+        })
+
         // Player Keyboard Controls
         $(window).keydown((e) => {
             let key = e.key;

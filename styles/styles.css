@@ -222,7 +222,7 @@ main {
 }
 
 .paused::after {
-    content: "Press (x) to Play";
+    content: "Click Screen or Press (x) to Play";
     position: absolute;
     top: 50%;
     left: 50%;
