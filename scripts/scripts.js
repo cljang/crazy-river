@@ -763,6 +763,19 @@ const riverGame = {
             riverGame.leftPressed(false);
         })
 
+        // Left button on Mobile
+        riverGame.$leftBtn.on('vmousedown',(e) => {
+            e.preventDefault();
+
+            riverGame.leftPressed(true);
+        })
+
+        riverGame.$leftBtn.on('vmouseup', (e) => {
+            e.preventDefault();
+
+            riverGame.leftPressed(false);
+        })
+
         // Right Button
         riverGame.$rightBtn.mousedown((e) => {
             e.preventDefault();
@@ -771,6 +784,19 @@ const riverGame = {
         })
         
         riverGame.$rightBtn.mouseup((e) => {
+            e.preventDefault();
+
+            riverGame.rightPressed(false);
+        })
+
+        // Right button on Mobile
+        riverGame.$rightBtn.on('vmousedown',(e) => {
+            e.preventDefault();
+
+            riverGame.rightPressed(true);
+        })
+
+        riverGame.$rightBtn.on('vmouseup', (e) => {
             e.preventDefault();
 
             riverGame.rightPressed(false);

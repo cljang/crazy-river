@@ -182,7 +182,8 @@ main {
 /* Setup Screen */
 #setup-screen input[type="text"] {
     display: block;
-    width: 15rem;
+    width: 100%;
+    max-width: 15rem;
     margin: 0 auto 1rem;
     padding: 0.25rem;
     text-align: center;
