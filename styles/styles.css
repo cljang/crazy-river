@@ -319,6 +319,14 @@ main {
     grid-column: span 2;
 }
 
+#game-over-screen .btn {
+    font-size: 0.875rem;
+}
+
+#game-over-screen .leaderboard-btn .message-2 {
+    display: none;
+}
+
 #game-over-screen h2 {
     font-size: 2rem;
 }
@@ -332,7 +340,21 @@ main {
     top: auto;
     left: auto;
     right: auto;
-    font-size: 1.25rem;
+    font-size: 1rem;
+}
+
+@media (min-width: 32.5rem) {
+    #game-over-screen .leaderboard-btn .message-1 {
+        display: none;
+    }
+    
+    #game-over-screen .leaderboard-btn .message-2 {
+        display: unset;
+    }
+
+    #game-over-screen .final-scores .score {
+        font-size: 1.25rem;
+    }
 }
 
 /* Leaderboard Screen */
