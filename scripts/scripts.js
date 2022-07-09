@@ -337,7 +337,7 @@ const riverGame = {
         }
     },
 
-    // Function to generate a path based on set of directions, directsion will control the path generation behaviour over the course of a path cycle
+    // Function to generate a path based on set of directions, directions will control the path generation behaviour over the course of a path cycle
     generateDirectedPath(path) {
         // Move path to top of the screen - minus some offset for extra path elements
         path.addTop(-(riverGame.$pathContainer.height() + (riverGame.pathHeight * (riverGame.extraPaths + 1))));
